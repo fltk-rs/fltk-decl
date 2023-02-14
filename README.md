@@ -1,9 +1,11 @@
 # fltk-decl
+Use json to describe your fltk-rs gui.
 
 ## Usage
 Create a json file, let's call it gui.json.
 ```json
 {
+    "$schema": "https://raw.githubusercontent.com/MoAlyousef/fltk-decl/main/fltk-schema.json",
     "widget": "Column",
     "children": [
         {
@@ -42,6 +44,7 @@ Create a json file, let's call it gui.json.
     ]
 }
 ```
+Notice we point to the schema to get auto-completion and hinting on vscode, otherwise it's optional.
 
 Import it into your app:
 ```rust
