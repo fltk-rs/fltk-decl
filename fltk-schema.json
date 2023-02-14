@@ -1,0 +1,50 @@
+{
+    "$id": "fltk-schema.json",
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "fltk-rs widget schema",
+    "description": "fltk-rs widget schema",
+    "definitions": {
+        "widget": {
+            "type": "object",
+            "required": [
+                "widget"
+            ],
+            "properties": {
+                "widget": {
+                    "type": "string",
+                    "description": "The widget type."
+                },
+                "label": {
+                    "type": "string",
+                    "description": "The widget's label."
+                },
+                "fixed": {
+                    "type": "integer",
+                    "description": "Whether the widget is fixed within a flex",
+                    "minimum": 0
+                },
+                "id": {
+                    "type": "string",
+                    "description": "The widget's id."
+                },
+                "labelcolor": {
+                    "type": "string",
+                    "description": "The widget's labelcolor."
+                },
+                "color": {
+                    "type": "string",
+                    "description": "The widget's color."
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/widget"
+                    },
+                    "default": []
+                }
+            }
+        }
+    },
+    "type": "object",
+    "$ref": "#/definitions/widget"
+}
