@@ -1,5 +1,5 @@
 # fltk-decl
-Use json to describe your fltk-rs gui.
+Use json to describe your fltk-rs gui, with support for hot-reloading. 
 
 ## Usage
 Create a json file, let's call it gui.json.
