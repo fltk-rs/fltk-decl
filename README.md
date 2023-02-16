@@ -46,6 +46,24 @@ Create a json file, let's call it gui.json.
 ```
 Notice we point to the schema to get auto-completion and hinting on vscode, otherwise it's optional.
 
+Note that this crate uses json5, so you could just as easily change your gui.json to gui.json5:
+```json5
+{
+    // main column
+    widget: "Column",
+    id: "my_column",
+    children: [
+        {
+            // our button
+            widget: "Button",
+            color: "#ff0000",
+            id: "my_button",
+        }
+    ],
+}
+```
+However, you lose vscode's auto-completion since json5 extensions in vscode don't support schemas.
+
 Import it into your app:
 ```rust
 use fltk_decl::DeclarativeApp;

@@ -35,7 +35,7 @@ pub struct DeclarativeApp {
 
 fn load(path: &str) -> Result<Widget, Box<dyn std::error::Error>> {
     let s = std::fs::read_to_string(path)?;
-    Ok(serde_json::from_str(&s)?)
+    Ok(serde_json5::from_str(&s)?)
 }
 
 fn handle_w<T>(w: &Widget, widget: &mut T) where T: Clone + Send + Sync + WidgetExt + 'static {
