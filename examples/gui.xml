@@ -1,11 +1,34 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <root>
-    <widget>Column</widget>
+  <widget>Column</widget>
+  <children>
+    <widget>Button</widget>
+    <label>Increment</label>
+    <fixed>60</fixed>
+    <id>inc</id>
+    <labelcolor>#0000ff</labelcolor>
+  </children>
+  <children>
+    <widget>Row</widget>
     <children>
-        <widget>Button</widget>
-        <label>Inc</label>
-        <fixed>60</fixed>
-        <id>inc</id>
-        <labelcolor>#0000ff</labelcolor>
+      <widget>Frame</widget>
+      <fixed>30</fixed>
     </children>
+    <children>
+      <widget>Frame</widget>
+      <label>0</label>
+      <id>result</id>
+      <labelcolor>#ff0000</labelcolor>
+    </children>
+    <children>
+      <widget>Frame</widget>
+      <fixed>30</fixed>
+    </children>
+  </children>
+  <children>
+    <widget>Button</widget>
+    <label>Dec</label>
+    <fixed>60</fixed>
+    <id>dec</id>
+  </children>
 </root>

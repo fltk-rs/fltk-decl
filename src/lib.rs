@@ -1,5 +1,6 @@
+#![doc = include_str!("../README.md")]
+
 use fltk::{prelude::*, *};
-#[cfg(feature = "notify")]
 use notify::{
     event::{AccessKind, AccessMode, EventKind},
     Event, RecursiveMode, Watcher,
@@ -11,7 +12,7 @@ use std::sync::{
 };
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct Widget {
+struct Widget {
     widget: String,
     label: Option<String>,
     id: Option<String>,
@@ -44,6 +45,7 @@ pub struct Widget {
     gap: Option<i32>,
 }
 
+/// Entry point for your declarative app
 #[derive(Debug, Clone)]
 pub struct DeclarativeApp {
     a: app::App,
@@ -124,8 +126,9 @@ fn transform(w: &Widget) {
 }
 
 impl DeclarativeApp {
+    /// Instantiate a new declarative app
     pub fn new(w: i32, h: i32, label: &str, path: &str) -> Self {
-        let json = load(path).unwrap();
+        let json = load(path).expect("Failed to load widget data!");
         let a = app::App::default().with_scheme(app::Scheme::Gtk);
         Self {
             a,
@@ -137,7 +140,14 @@ impl DeclarativeApp {
         }
     }
 
-    pub fn run<F: FnMut() + 'static>(&self, mut run_cb: F) {
+    /// Run your declarative app.
+    /// The bool flag determines whether hot-reloading is enabled.
+    /// The callback exposes the app's main window
+    pub fn run<F: FnMut(&mut window::Window) + 'static>(
+        &self,
+        hot_reload: bool,
+        mut run_cb: F,
+    ) -> Result<(), Box<dyn std::error::Error>> {
         let mut win = window::Window::default()
             .with_size(self.w, self.h)
             .with_label(&self.label);
@@ -152,21 +162,20 @@ impl DeclarativeApp {
             win.resizable(&frst);
         }
 
-        let flag = Arc::new(AtomicBool::new(true));
-        app::add_timeout3(0.1, {
-            let flag = flag.clone();
-            move |_t| {
-                if flag.load(Ordering::Relaxed) {
-                    run_cb();
-                    flag.store(false, Ordering::Relaxed);
+        if hot_reload {
+            let flag = Arc::new(AtomicBool::new(true));
+            app::add_timeout3(0.0, {
+                let flag = flag.clone();
+                let mut win = win.clone();
+                move |_t| {
+                    if flag.load(Ordering::Relaxed) {
+                        run_cb(&mut win);
+                        flag.store(false, Ordering::Relaxed);
+                    }
+                    app::repeat_timeout3(0.1, _t);
                 }
-                #[cfg(feature = "notify")]
-                app::repeat_timeout3(0.1, _t);
-            }
-        });
+            });
 
-        #[cfg(feature = "notify")]
-        {
             let path = self.path.clone();
             let mut watcher =
                 notify::recommended_watcher(move |res: Result<Event, notify::Error>| match res {
@@ -188,16 +197,14 @@ impl DeclarativeApp {
                         }
                     }
                     Err(e) => eprintln!("{}", e),
-                })
-                .unwrap();
-            watcher
-                .watch(
-                    std::path::Path::new(&self.path),
-                    RecursiveMode::NonRecursive,
-                )
-                .unwrap();
+                })?;
+            watcher.watch(
+                std::path::Path::new(&self.path),
+                RecursiveMode::NonRecursive,
+            )?;
         }
 
-        self.a.run().unwrap();
+        self.a.run()?;
+        Ok(())
     }
 }

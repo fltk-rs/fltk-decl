@@ -6,9 +6,6 @@ In your Cargo.toml:
 ```toml
 [dependencies]
 fltk-decl = "0.1"
-# or, to enable hot-reloading:
-[dependencies]
-fltk-decl = { version = "0.1", features = ["notify"] }
 ```
 Create a json file, let's call it gui.json.
 ```json
@@ -94,7 +91,7 @@ use fltk_decl::DeclarativeApp;
 
 fn main() {
     // use the filetype and extension that you require
-    DeclarativeApp::new(400, 300, "MyApp", "gui.json").run(|| {});
+    DeclarativeApp::new(200, 300, "MyApp", "gui.json").run(true, |_main_win| {});
 }
 ```
 
@@ -120,7 +117,7 @@ fn current_value(val: i32) -> String {
 
 fn main() {
     app::GlobalState::new(State { count: 0 });
-    DeclarativeApp::new(400, 300, "MyApp", "gui.json").run(|| {
+    DeclarativeApp::new(200, 300, "MyApp", "gui.json").run(true, |_| {
         let mut inc: button::Button = app::widget_from_id("inc").unwrap();
         let mut dec: button::Button = app::widget_from_id("dec").unwrap();
         let mut result: frame::Frame = app::widget_from_id("result").unwrap();
@@ -137,12 +134,3 @@ fn main() {
 }
 ```
 
-To enable hotreloading, enable the `notify` feature:
-```
-cargo run --features=fltk-decl/notify
-```
-or add it to your Cargo.toml
-```toml
-[dependencies]
-fltk-decl = { version = "0.1", features = ["notify"] }
-```
