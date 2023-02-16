@@ -1,5 +1,5 @@
 {
-    "$id": "https://raw.githubusercontent.com/MoAlyousef/fltk-decl/main/fltk-schema.json",
+    "$id": "https://raw.githubusercontent.com/MoAlyousef/fltk-decl/main/schemas/fltk-schema.json",
     "$schema": "http://json-schema.org/draft-04/schema#",
     "title": "fltk-rs widget schema",
     "description": "fltk-rs widget schema",

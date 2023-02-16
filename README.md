@@ -2,6 +2,14 @@
 Use a declarative language (json5, json, xml) to describe your fltk-rs gui, with support for hot-reloading. 
 
 ## Usage
+In your Cargo.toml:
+```toml
+[dependencies]
+fltk-decl = "0.1" }
+# or, to enable hot-reloading:
+[dependencies]
+fltk-decl = { version = "0.1", features = ["notify"] }
+```
 Create a json file, let's call it gui.json.
 ```json
 {
@@ -127,4 +135,14 @@ fn main() {
         });
     });
 }
+```
+
+To enable hotreloading, enable the `notify` feature:
+```
+cargo run --features=fltk-decl/notify
+```
+or add it to your Cargo.toml
+```toml
+[dependencies]
+fltk-decl = { version = "0.1", features = ["notify"] }
 ```

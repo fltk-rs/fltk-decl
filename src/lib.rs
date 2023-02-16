@@ -1,15 +1,13 @@
 use fltk::{prelude::*, *};
+#[cfg(feature = "notify")]
 use notify::{
     event::{AccessKind, AccessMode, EventKind},
     Event, RecursiveMode, Watcher,
 };
 use serde_derive::{Deserialize, Serialize};
-use std::{
-    path::Path,
-    sync::{
-        atomic::{AtomicBool, Ordering},
-        Arc,
-    },
+use std::sync::{
+    atomic::{AtomicBool, Ordering},
+    Arc,
 };
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -29,6 +27,7 @@ pub struct DeclarativeApp {
     w: i32,
     h: i32,
     label: String,
+    #[allow(dead_code)]
     path: String,
     widget: Option<Widget>,
 }
@@ -42,7 +41,10 @@ fn load(path: &str) -> Option<Widget> {
     }
 }
 
-fn handle_w<T>(w: &Widget, widget: &mut T) where T: Clone + Send + Sync + WidgetExt + 'static {
+fn handle_w<T>(w: &Widget, widget: &mut T)
+where
+    T: Clone + Send + Sync + WidgetExt + 'static,
+{
     if let Some(id) = &w.id {
         widget.set_id(Box::leak(id.clone().into_boxed_str()));
     }
@@ -130,42 +132,48 @@ impl DeclarativeApp {
         let flag = Arc::new(AtomicBool::new(true));
         app::add_timeout3(0.1, {
             let flag = flag.clone();
-            move |t| {
+            move |_t| {
                 if flag.load(Ordering::Relaxed) {
                     run_cb();
                     flag.store(false, Ordering::Relaxed);
                 }
-                app::repeat_timeout3(0.1, t);
+                #[cfg(feature = "notify")]
+                app::repeat_timeout3(0.1, _t);
             }
         });
 
-        let path = self.path.clone();
-
-        let mut watcher =
-            notify::recommended_watcher(move |res: Result<Event, notify::Error>| match res {
-                Ok(event) => {
-                    if let EventKind::Access(AccessKind::Close(mode)) = event.kind {
-                        if mode == AccessMode::Write {
-                            if let Some(wid) = load(&path) {
-                                win.clear();
-                                win.begin();
-                                transform(&wid);
-                                win.end();
-                                if let Some(mut frst) = win.child(0) {
-                                    frst.resize(0, 0, win.w(), win.h());
-                                    win.resizable(&frst);
+        #[cfg(feature = "notify")]
+        {
+            let path = self.path.clone();
+            let mut watcher =
+                notify::recommended_watcher(move |res: Result<Event, notify::Error>| match res {
+                    Ok(event) => {
+                        if let EventKind::Access(AccessKind::Close(mode)) = event.kind {
+                            if mode == AccessMode::Write {
+                                if let Some(wid) = load(&path) {
+                                    win.clear();
+                                    win.begin();
+                                    transform(&wid);
+                                    win.end();
+                                    if let Some(mut frst) = win.child(0) {
+                                        frst.resize(0, 0, win.w(), win.h());
+                                        win.resizable(&frst);
+                                    }
+                                    flag.store(true, Ordering::Relaxed);
                                 }
-                                flag.store(true, Ordering::Relaxed);
                             }
                         }
                     }
-                }
-                Err(e) => eprintln!("{}", e),
-            })
-            .unwrap();
-        watcher
-            .watch(Path::new(&self.path), RecursiveMode::NonRecursive)
-            .unwrap();
+                    Err(e) => eprintln!("{}", e),
+                })
+                .unwrap();
+            watcher
+                .watch(
+                    std::path::Path::new(&self.path),
+                    RecursiveMode::NonRecursive,
+                )
+                .unwrap();
+        }
 
         self.a.run().unwrap();
     }
