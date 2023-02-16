@@ -5,7 +5,7 @@ Use a declarative language (json5, json, xml) to describe your fltk-rs gui, with
 In your Cargo.toml:
 ```toml
 [dependencies]
-fltk-decl = "0.1" }
+fltk-decl = "0.1"
 # or, to enable hot-reloading:
 [dependencies]
 fltk-decl = { version = "0.1", features = ["notify"] }
