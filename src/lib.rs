@@ -33,9 +33,13 @@ pub struct DeclarativeApp {
     widget: Option<Widget>,
 }
 
-fn load(path: &str) -> Result<Widget, Box<dyn std::error::Error>> {
-    let s = std::fs::read_to_string(path)?;
-    Ok(serde_json5::from_str(&s)?)
+fn load(path: &str) -> Option<Widget> {
+    let s = std::fs::read_to_string(path).expect("Invalid path!");
+    if path.ends_with(".xml") {
+        serde_xml_rs::from_str(&s).ok()
+    } else {
+        serde_json5::from_str(&s).ok()
+    }
 }
 
 fn handle_w<T>(w: &Widget, widget: &mut T) where T: Clone + Send + Sync + WidgetExt + 'static {
@@ -142,7 +146,7 @@ impl DeclarativeApp {
                 Ok(event) => {
                     if let EventKind::Access(AccessKind::Close(mode)) = event.kind {
                         if mode == AccessMode::Write {
-                            if let Ok(wid) = load(&path) {
+                            if let Some(wid) = load(&path) {
                                 win.clear();
                                 win.begin();
                                 transform(&wid);

@@ -1,5 +1,5 @@
 # fltk-decl
-Use json to describe your fltk-rs gui, with support for hot-reloading. 
+Use a declarative language (json5, json, xml) to describe your fltk-rs gui, with support for hot-reloading. 
 
 ## Usage
 Create a json file, let's call it gui.json.
@@ -64,11 +64,28 @@ Note that this crate uses json5, so you could just as easily change your gui.jso
 ```
 However, you lose vscode's auto-completion since json5 extensions in vscode don't support schemas.
 
+You could also use xml:
+`gui.xml`
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <widget>Column</widget>
+    <children>
+        <widget>Button</widget>
+        <label>Inc</label>
+        <fixed>60</fixed>
+        <id>inc</id>
+        <labelcolor>#0000ff</labelcolor>
+    </children>
+</root>
+```
+
 Import it into your app:
 ```rust
 use fltk_decl::DeclarativeApp;
 
 fn main() {
+    // use the filetype and extension that you require
     DeclarativeApp::new(400, 300, "MyApp", "gui.json").run(|| {});
 }
 ```
