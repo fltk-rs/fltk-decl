@@ -1,10 +1,12 @@
-use fltk::{prelude::*, *};
 use crate::Widget;
+use fltk::{prelude::*, *};
 
 pub(crate) fn load(path: &str) -> Option<Widget> {
     let s = std::fs::read_to_string(path).expect("Invalid path!");
     if path.ends_with(".xml") {
         serde_xml_rs::from_str(&s).ok()
+    } else if path.ends_with(".toml") {
+        toml::from_str(&s).ok()
     } else {
         serde_json5::from_str(&s).ok()
     }
@@ -166,16 +168,220 @@ pub(crate) fn transform(w: &Widget) {
             let mut b = button::ToggleButton::default();
             handle_w(w, &mut b);
         }
-        "RoundRadioButton" => {
-            let mut b = button::RoundRadioButton::default();
+        "RadioRoundButton" => {
+            let mut b = button::RadioRoundButton::default();
             handle_w(w, &mut b);
         }
-        "RoundRadioButton" => {
-            let mut b = button::RoundRadioButton::default();
+        "ReturnButton" => {
+            let mut b = button::ReturnButton::default();
             handle_w(w, &mut b);
         }
         "Frame" => {
             let mut f = frame::Frame::default();
+            handle_w(w, &mut f);
+        }
+        "Group" => {
+            let mut f = group::Group::default();
+            handle_w(w, &mut f);
+        }
+        "Pack" => {
+            let mut f = group::Pack::default();
+            handle_w(w, &mut f);
+        }
+        "Tile" => {
+            let mut f = group::Tile::default();
+            handle_w(w, &mut f);
+        }
+        "Tabs" => {
+            let mut f = group::Tabs::default();
+            handle_w(w, &mut f);
+        }
+        "Scroll" => {
+            let mut f = group::Scroll::default();
+            handle_w(w, &mut f);
+        }
+        "ColorChooser" => {
+            let mut f = group::ColorChooser::default();
+            handle_w(w, &mut f);
+        }
+        "TextDisplay" => {
+            let mut f = text::TextDisplay::default();
+            let buf = text::TextBuffer::default();
+            f.set_buffer(buf);
+            handle_w(w, &mut f);
+        }
+        "TextEditor" => {
+            let mut f = text::TextEditor::default();
+            let buf = text::TextBuffer::default();
+            f.set_buffer(buf);
+            handle_w(w, &mut f);
+        }
+        "Input" => {
+            let mut f = input::Input::default();
+            handle_w(w, &mut f);
+        }
+        "IntInput" => {
+            let mut f = input::IntInput::default();
+            handle_w(w, &mut f);
+        }
+        "FloatInput" => {
+            let mut f = input::FloatInput::default();
+            handle_w(w, &mut f);
+        }
+        "SecretInput" => {
+            let mut f = input::SecretInput::default();
+            handle_w(w, &mut f);
+        }
+        "FileInput" => {
+            let mut f = input::FileInput::default();
+            handle_w(w, &mut f);
+        }
+        "MultilineInput" => {
+            let mut f = input::MultilineInput::default();
+            handle_w(w, &mut f);
+        }
+        "Output" => {
+            let mut f = output::Output::default();
+            handle_w(w, &mut f);
+        }
+        "MultilineOutput" => {
+            let mut f = output::Output::default();
+            handle_w(w, &mut f);
+        }
+        "MenuBar" => {
+            let mut f = menu::MenuBar::default();
+            handle_w(w, &mut f);
+        }
+        "SysMenuBar" => {
+            let mut f = menu::SysMenuBar::default();
+            handle_w(w, &mut f);
+        }
+        "Choice" => {
+            let mut f = menu::Choice::default();
+            handle_w(w, &mut f);
+        }
+        "Slider" => {
+            let mut f = valuator::Slider::default();
+            handle_w(w, &mut f);
+        }
+        "NiceSlider" => {
+            let mut f = valuator::NiceSlider::default();
+            handle_w(w, &mut f);
+        }
+        "FillSlider" => {
+            let mut f = valuator::FillSlider::default();
+            handle_w(w, &mut f);
+        }
+        "ValueSlider" => {
+            let mut f = valuator::ValueSlider::default();
+            handle_w(w, &mut f);
+        }
+        "Dial" => {
+            let mut f = valuator::Dial::default();
+            handle_w(w, &mut f);
+        }
+        "LineDial" => {
+            let mut f = valuator::LineDial::default();
+            handle_w(w, &mut f);
+        }
+        "FillDial" => {
+            let mut f = valuator::FillDial::default();
+            handle_w(w, &mut f);
+        }
+        "Counter" => {
+            let mut f = valuator::Counter::default();
+            handle_w(w, &mut f);
+        }
+        "Scrollbar" => {
+            let mut f = valuator::Scrollbar::default();
+            handle_w(w, &mut f);
+        }
+        "Roller" => {
+            let mut f = valuator::Roller::default();
+            handle_w(w, &mut f);
+        }
+        "Adjuster" => {
+            let mut f = valuator::Adjuster::default();
+            handle_w(w, &mut f);
+        }
+        "ValueInput" => {
+            let mut f = valuator::ValueInput::default();
+            handle_w(w, &mut f);
+        }
+        "ValueOutput" => {
+            let mut f = valuator::ValueOutput::default();
+            handle_w(w, &mut f);
+        }
+        "HorSlider" => {
+            let mut f = valuator::HorSlider::default();
+            handle_w(w, &mut f);
+        }
+        "HorNiceSlider" => {
+            let mut f = valuator::HorNiceSlider::default();
+            handle_w(w, &mut f);
+        }
+        "HorFillSlider" => {
+            let mut f = valuator::HorFillSlider::default();
+            handle_w(w, &mut f);
+        }
+        "HorValueSlider" => {
+            let mut f = valuator::HorValueSlider::default();
+            handle_w(w, &mut f);
+        }
+        "Browser" => {
+            let mut f = browser::Browser::default();
+            handle_w(w, &mut f);
+        }
+        "SelectBrowser" => {
+            let mut f = browser::SelectBrowser::default();
+            handle_w(w, &mut f);
+        }
+        "HoldBrowser" => {
+            let mut f = browser::HoldBrowser::default();
+            handle_w(w, &mut f);
+        }
+        "FileBrowser" => {
+            let mut f = browser::FileBrowser::default();
+            handle_w(w, &mut f);
+        }
+        "CheckBrowser" => {
+            let mut f = browser::CheckBrowser::default();
+            handle_w(w, &mut f);
+        }
+        "MultiBrowser" => {
+            let mut f = browser::MultiBrowser::default();
+            handle_w(w, &mut f);
+        }
+        "Table" => {
+            let mut f = table::Table::default();
+            handle_w(w, &mut f);
+        }
+        "TableRow" => {
+            let mut f = table::TableRow::default();
+            handle_w(w, &mut f);
+        }
+        "Tree" => {
+            let mut f = tree::Tree::default();
+            handle_w(w, &mut f);
+        }
+        "Spinner" => {
+            let mut f = misc::Spinner::default();
+            handle_w(w, &mut f);
+        }
+        "Chart" => {
+            let mut f = misc::Chart::default();
+            handle_w(w, &mut f);
+        }
+        "Progress" => {
+            let mut f = misc::Progress::default();
+            handle_w(w, &mut f);
+        }
+        "InputChoice" => {
+            let mut f = misc::InputChoice::default();
+            handle_w(w, &mut f);
+        }
+        "HelpView" => {
+            let mut f = misc::HelpView::default();
             handle_w(w, &mut f);
         }
         _ => (),
