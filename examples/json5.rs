@@ -6,14 +6,22 @@ struct State {
     count: i32,
 }
 
-fn current_value(val: i32) -> String {
-    let state = app::GlobalState::get();
-    state
-        .with(move |s: &mut State| {
-            s.count += val;
-            s.count
-        })
-        .to_string()
+impl State {
+    pub fn increment(&mut self, val: i32) {
+        let mut result: frame::Frame = app::widget_from_id("result").unwrap();
+        self.count += val;
+        result.set_label(&self.count.to_string());
+    }
+}
+
+fn inc_btn_cb(_b: &mut button::Button) {
+    let state = app::GlobalState::<State>::get();
+    state.with(|s| s.increment(1));
+}
+
+fn dec_btn_cb(_b: &mut button::Button) {
+    let state = app::GlobalState::<State>::get();
+    state.with(|s| s.increment(-1));
 }
 
 fn main() {
@@ -22,16 +30,8 @@ fn main() {
         .run(true, |_| {
             let mut inc: button::Button = app::widget_from_id("inc").unwrap();
             let mut dec: button::Button = app::widget_from_id("dec").unwrap();
-            let mut result: frame::Frame = app::widget_from_id("result").unwrap();
-            inc.set_callback({
-                let mut result = result.clone();
-                move |_| {
-                    result.set_label(&current_value(1));
-                }
-            });
-            dec.set_callback(move |_| {
-                result.set_label(&current_value(-1));
-            });
+            inc.set_callback(inc_btn_cb);
+            dec.set_callback(dec_btn_cb);
         })
         .unwrap();
 }

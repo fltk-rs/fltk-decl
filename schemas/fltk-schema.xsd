@@ -1,19 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
   <xsd:element name="root" type="root">
-    <xs:element name="widget" type="xs:string"/>
+    <xs:element name="widget" type="xs:string" />
     <xs:complexType name="fltkWidget">
       <xs:sequence>
-        <xs:element name="widget" type="xs:string"/>
-        <xs:element name="label" type="xs:string" minOccurs="0"/>
-        <xs:element name="fixed" type="xs:integer" minOccurs="0"/>
-        <xs:element name="id" type="xs:string" minOccurs="0"/>
-        <xs:element name="labelcolor" type="xs:string" minOccurs="0"/>
-        <xs:element name="color" type="xs:string" minOccurs="0"/>
+        <xs:element name="widget" type="xs:string" />
+        <xs:element name="label" type="xs:string" minOccurs="0" />
+        <xs:element name="fixed" type="xs:integer" minOccurs="0" />
+        <xs:element name="id" type="xs:string" minOccurs="0" />
+        <xs:element name="labelcolor" type="xs:string" minOccurs="0" />
+        <xs:element name="color" type="xs:string" minOccurs="0" />
+        <xs:element name="selectioncolor" type="xs:string" minOccurs="0" />
+        <xs:element name="hide" type="xs:boolean" minOccurs="0" />
+        <xs:element name="deactivate" type="xs:boolean" minOccurs="0" />
+        <xs:element name="show" type="xs:boolean" minOccurs="0" />
+        <xs:element name="resizable" type="xs:boolean" minOccurs="0" />
+        <xs:element name="tooltip" type="xs:string" minOccurs="0" />
+        <xs:element name="image" type="xs:string" minOccurs="0" />
+        <xs:element name="deimage" type="xs:string" minOccurs="0" />
+        <xs:element name="labelfont" type="xs:integer" minOccurs="0" />
+        <xs:element name="labelsize" type="xs:integer" minOccurs="0" />
+        <xs:element name="align" type="xs:integer" minOccurs="0" />
+        <xs:element name="when" type="xs:integer" minOccurs="0" />
+        <xs:element name="frame" type="xs:integer" minOccurs="0" />
+        <xs:element name="downframe" type="xs:integer" minOccurs="0" />
+        <xs:element name="shortcut" type="xs:string" minOccurs="0" />
+        <xs:element name="pad" type="xs:integer" minOccurs="0" />
+        <xs:element name="minimum" type="xs:double" minOccurs="0" />
+        <xs:element name="maximum" type="xs:double" minOccurs="0" />
+        <xs:element name="slidersize" type="xs:double" minOccurs="0" />
+        <xs:element name="step" type="xs:double" minOccurs="0" />
         <xs:element name="children" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
-              <xs:element ref="widget" minOccurs="0" maxOccurs="unbounded"/>
+              <xs:element ref="widget" minOccurs="0" maxOccurs="unbounded" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>
