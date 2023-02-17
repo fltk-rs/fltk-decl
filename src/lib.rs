@@ -96,9 +96,11 @@ impl DeclarativeApp {
             win.resizable(&frst);
         }
 
+        run_cb(&mut win);
+
         if hot_reload {
-            let flag = Arc::new(AtomicBool::new(true));
-            app::add_timeout3(0.0, {
+            let flag = Arc::new(AtomicBool::new(false));
+            app::add_timeout3(0.1, {
                 let flag = flag.clone();
                 let mut win = win.clone();
                 move |_t| {
