@@ -154,6 +154,26 @@ pub(crate) fn transform(w: &Widget) {
             let mut b = button::Button::default();
             handle_w(w, &mut b);
         }
+        "CheckButton" => {
+            let mut b = button::CheckButton::default();
+            handle_w(w, &mut b);
+        }
+        "RadioButton" => {
+            let mut b = button::RadioButton::default();
+            handle_w(w, &mut b);
+        }
+        "ToggleButton" => {
+            let mut b = button::ToggleButton::default();
+            handle_w(w, &mut b);
+        }
+        "RoundRadioButton" => {
+            let mut b = button::RoundRadioButton::default();
+            handle_w(w, &mut b);
+        }
+        "RoundRadioButton" => {
+            let mut b = button::RoundRadioButton::default();
+            handle_w(w, &mut b);
+        }
         "Frame" => {
             let mut f = frame::Frame::default();
             handle_w(w, &mut f);
