@@ -1,7 +1,8 @@
 use crate::Widget;
 use fltk::{prelude::*, *};
+use std::path::Path;
 
-pub(crate) fn load(path: &str) -> Option<Widget> {
+pub(crate) fn load(path: &Path) -> Option<Widget> {
     let s = std::fs::read_to_string(path).expect("Invalid path!");
     if path.ends_with(".xml") {
         serde_xml_rs::from_str(&s).ok()

@@ -6,9 +6,12 @@ use notify::{
     Event, RecursiveMode, Watcher,
 };
 use serde_derive::{Deserialize, Serialize};
-use std::sync::{
-    atomic::{AtomicBool, Ordering},
-    Arc,
+use std::{
+    path::{Path, PathBuf},
+    sync::{
+        atomic::{AtomicBool, Ordering},
+        Arc,
+    },
 };
 
 mod utils;
@@ -52,21 +55,21 @@ pub struct DeclarativeApp {
     h: i32,
     label: String,
     #[allow(dead_code)]
-    path: String,
+    path: PathBuf,
     widget: Option<Widget>,
 }
 
 impl DeclarativeApp {
     /// Instantiate a new declarative app
-    pub fn new(w: i32, h: i32, label: &str, path: &str) -> Self {
-        let json = utils::load(path).expect("Failed to load widget data!");
+    pub fn new<P: AsRef<Path>>(w: i32, h: i32, label: &str, path: P) -> Self {
+        let json = utils::load(path.as_ref()).expect("Failed to load widget data!");
         let a = app::App::default().with_scheme(app::Scheme::Gtk);
         Self {
             a,
             w,
             h,
             label: label.to_string(),
-            path: path.to_string(),
+            path: PathBuf::from(path.as_ref()),
             widget: Some(json),
         }
     }
@@ -129,10 +132,7 @@ impl DeclarativeApp {
                     }
                     Err(e) => eprintln!("{}", e),
                 })?;
-            watcher.watch(
-                std::path::Path::new(&self.path),
-                RecursiveMode::NonRecursive,
-            )?;
+            watcher.watch(&self.path, RecursiveMode::NonRecursive)?;
         }
 
         self.a.run()?;
