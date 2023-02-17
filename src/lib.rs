@@ -29,20 +29,11 @@ struct Widget {
     image: Option<String>,
     deimage: Option<String>,
     value: Option<String>,
-    labelfont: Option<i32>,
+    labelfont: Option<u32>,
     labelsize: Option<i32>,
     align: Option<i32>,
     when: Option<i32>,
-    minimum: Option<f64>,
-    maximum: Option<f64>,
-    step: Option<f64>,
-    slidersize: Option<f64>,
-    size: Option<f64>,
-    textfont: Option<i32>,
-    textsize: Option<i32>,
-    textcolor: Option<String>,
-    shortcut: Option<String>,
-    gap: Option<i32>,
+    frame: Option<u32>,
 }
 
 /// Entry point for your declarative app
@@ -88,6 +79,11 @@ where
             widget.set_color(col);
         }
     }
+    if let Some(col) = &w.selectioncolor {
+        if let Ok(col) = enums::Color::from_hex_str(col) {
+            widget.set_selection_color(col);
+        }
+    }
     if let Some(col) = &w.labelcolor {
         if let Ok(col) = enums::Color::from_hex_str(col) {
             widget.set_label_color(col);
@@ -96,6 +92,59 @@ where
     if let Some(children) = &w.children {
         for c in children {
             transform(c);
+        }
+    }
+    if let Some(v) = w.hide {
+        if v {
+            widget.hide();
+        }
+    }
+    if let Some(v) = w.deactivate {
+        if v {
+            widget.deactivate();
+        }
+    }
+    if let Some(v) = w.visible {
+        if v {
+            widget.deactivate();
+        }
+    }
+    if let Some(v) = w.resizable {
+        if v {
+            if let Some(mut grp) = widget.as_group() {
+                grp.make_resizable(true);
+            } else {
+                let parent = widget.parent().unwrap();
+                parent.resizable(widget);
+            }
+        }
+    }
+    if let Some(tip) = &w.tooltip {
+        widget.set_tooltip(&tip);
+    }
+    if let Some(path) = &w.image {
+        widget.set_image(Some(image::SharedImage::load(path).expect("Failed to load image!")));
+    }
+    if let Some(path) = &w.deimage {
+        widget.set_deimage(Some(image::SharedImage::load(path).expect("Failed to load image!")));
+    }
+    if let Some(sz) = w.labelsize {
+        widget.set_label_size(sz);
+    }
+    if let Some(a) = w.align {
+        widget.set_align(unsafe { std::mem::transmute(a) });
+    }
+    if let Some(a) = w.when {
+        widget.set_trigger(unsafe { std::mem::transmute(a) });
+    }
+    if let Some(f) = w.labelfont {
+        if f < 14 {
+            widget.set_label_font(unsafe { std::mem::transmute(f) });
+        }
+    }
+    if let Some(f) = w.frame {
+        if f < 50 {
+            widget.set_frame(unsafe { std::mem::transmute(f) });
         }
     }
     if let Some(grp) = group::Group::from_dyn_widget(widget) {

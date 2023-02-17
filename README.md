@@ -10,7 +10,7 @@ fltk-decl = "0.1"
 Create a json file, let's call it gui.json.
 ```json
 {
-    "$schema": "https://raw.githubusercontent.com/MoAlyousef/fltk-decl/main/fltk-schema.json",
+    "$schema": "https://raw.githubusercontent.com/MoAlyousef/fltk-decl/main/schemas/fltk-schema.json",
     "widget": "Column",
     "children": [
         {

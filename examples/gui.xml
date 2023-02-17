@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="https://raw.githubusercontent.com/MoAlyousef/fltk-decl/main/schemas/fltk-schema.xsd"?>
 <root>
   <widget>Column</widget>
   <children>
@@ -32,3 +33,4 @@
     <id>dec</id>
   </children>
 </root>
+</xs:schema>
