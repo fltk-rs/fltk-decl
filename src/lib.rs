@@ -140,4 +140,27 @@ impl DeclarativeApp {
         self.a.run()?;
         Ok(())
     }
+
+    #[doc(hidden)]
+    pub fn dump_image(&self) {
+        let mut win = window::Window::default()
+            .with_size(self.w, self.h)
+            .with_label(&self.label);
+        if let Some(widget) = &self.widget {
+            utils::transform(widget);
+        }
+        win.end();
+        win.show();
+
+        if let Some(mut frst) = win.child(0) {
+            frst.resize(0, 0, win.w(), win.h());
+            win.resizable(&frst);
+        }
+        let sur = surface::SvgFileSurface::new(win.w(), win.h(), "temp.svg");
+        surface::SvgFileSurface::push_current(&sur);
+        draw::set_draw_color(enums::Color::White);
+        draw::draw_rectf(0, 0, win.w(), win.h());
+        sur.draw(&win, 0, 0);
+        surface::SvgFileSurface::pop_current();
+    }
 }
