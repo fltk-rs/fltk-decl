@@ -4,7 +4,7 @@
   <widget>Column</widget>
   <children>
     <widget>Button</widget>
-    <label>Increment</label>
+    <label>Inc</label>
     <fixed>60</fixed>
     <id>inc</id>
     <labelcolor>#0000ff</labelcolor>
@@ -33,4 +33,3 @@
     <id>dec</id>
   </children>
 </root>
-</xs:schema>

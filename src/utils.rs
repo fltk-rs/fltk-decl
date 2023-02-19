@@ -4,6 +4,7 @@ use std::path::Path;
 
 pub(crate) fn load(path: &Path) -> Option<Widget> {
     let s = std::fs::read_to_string(path).expect("Invalid path!");
+    let path = path.to_str().unwrap();
     if path.ends_with(".xml") {
         serde_xml_rs::from_str(&s).ok()
     } else if path.ends_with(".toml") {

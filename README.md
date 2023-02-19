@@ -1,5 +1,5 @@
 # fltk-decl
-Use a declarative language (json5, json, xml, toml) to describe your fltk-rs gui, with support for hot-reloading of your gui file. 
+Use a declarative language (json5, json, xml, toml) to describe your fltk-rs gui, with support for hot-reloading of your gui file. The crate is designed to be as permissive as possible. So wrong keys or values will be ignored.
 
 ## Usage
 In your Cargo.toml:
@@ -100,9 +100,8 @@ Import it into your app:
 use fltk_decl::DeclarativeApp;
 
 fn main() {
-    // use the filetype and extension that you require
-    // `run` takes a bool and a callback, the bool indicates you want hot-reloading.
-    // The callback runs at least once, or whenever the gui file changes.
+    // use the filetype and extension that you require.
+    // `run` a callback that runs at least once, or whenever the gui file changes.
     DeclarativeApp::new(200, 300, "MyApp", "gui.json").run(true, |_main_win| {});
 }
 ```
@@ -111,6 +110,9 @@ To handle callbacks:
 ```rust
 use fltk::{prelude::*, *};
 use fltk_decl::DeclarativeApp;
+
+// use the extension you require!
+const PATH: &str = "examples/gui.json";
 
 #[derive(Clone, Copy)]
 struct State {
@@ -125,24 +127,27 @@ impl State {
     }
 }
 
-fn inc_btn_cb(_b: &mut button::Button) {
+fn btn_cb(b: &mut button::Button) {
     let state = app::GlobalState::<State>::get();
-    state.with(|s| s.increment(1));
-}
-
-fn dec_btn_cb(_b: &mut button::Button) {
-    let state = app::GlobalState::<State>::get();
-    state.with(|s| s.increment(-1));
+    let val = if b.label() == "Inc" {
+        1
+    } else {
+        -1
+    };
+    state.with(move |s| s.increment(val));
 }
 
 fn main() {
     app::GlobalState::new(State { count: 0 });
-    DeclarativeApp::new(200, 300, "MyApp", "examples/gui.json")
-        .run(true, |_win| {
-            let mut inc: button::Button = app::widget_from_id("inc").unwrap();
-            let mut dec: button::Button = app::widget_from_id("dec").unwrap();
-            inc.set_callback(inc_btn_cb);
-            dec.set_callback(dec_btn_cb);
+    DeclarativeApp::new(200, 300, "MyApp", PATH)
+        .run(|_win| {
+            app::set_scheme(app::Scheme::Oxy);
+            if let Some(mut btn) = app::widget_from_id::<button::Button>("inc") {
+                btn.set_callback(btn_cb);
+            }
+            if let Some(mut btn) = app::widget_from_id::<button::Button>("dec") {
+                btn.set_callback(btn_cb);
+            }
         })
         .unwrap();
 }

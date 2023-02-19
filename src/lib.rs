@@ -75,11 +75,9 @@ impl DeclarativeApp {
     }
 
     /// Run your declarative app.
-    /// The bool flag determines whether hot-reloading is enabled.
     /// The callback exposes the app's main window
     pub fn run<F: FnMut(&mut window::Window) + 'static>(
         &self,
-        hot_reload: bool,
         mut run_cb: F,
     ) -> Result<(), Box<dyn std::error::Error>> {
         let mut win = window::Window::default()
@@ -98,44 +96,42 @@ impl DeclarativeApp {
 
         run_cb(&mut win);
 
-        if hot_reload {
-            let flag = Arc::new(AtomicBool::new(false));
-            app::add_timeout3(0.1, {
-                let flag = flag.clone();
-                let mut win = win.clone();
-                move |_t| {
-                    if flag.load(Ordering::Relaxed) {
-                        run_cb(&mut win);
-                        flag.store(false, Ordering::Relaxed);
-                    }
-                    app::repeat_timeout3(0.1, _t);
+        let flag = Arc::new(AtomicBool::new(false));
+        app::add_timeout3(0.1, {
+            let flag = flag.clone();
+            let mut win = win.clone();
+            move |_t| {
+                if flag.load(Ordering::Relaxed) {
+                    run_cb(&mut win);
+                    flag.store(false, Ordering::Relaxed);
                 }
-            });
+                app::repeat_timeout3(0.1, _t);
+            }
+        });
 
-            let path = self.path.clone();
-            let mut watcher =
-                notify::recommended_watcher(move |res: Result<Event, notify::Error>| match res {
-                    Ok(event) => {
-                        if let EventKind::Access(AccessKind::Close(mode)) = event.kind {
-                            if mode == AccessMode::Write {
-                                if let Some(wid) = utils::load(&path) {
-                                    win.clear();
-                                    win.begin();
-                                    utils::transform(&wid);
-                                    win.end();
-                                    if let Some(mut frst) = win.child(0) {
-                                        frst.resize(0, 0, win.w(), win.h());
-                                        win.resizable(&frst);
-                                    }
-                                    flag.store(true, Ordering::Relaxed);
+        let path = self.path.clone();
+        let mut watcher =
+            notify::recommended_watcher(move |res: Result<Event, notify::Error>| match res {
+                Ok(event) => {
+                    if let EventKind::Access(AccessKind::Close(mode)) = event.kind {
+                        if mode == AccessMode::Write {
+                            if let Some(wid) = utils::load(&path) {
+                                win.clear();
+                                win.begin();
+                                utils::transform(&wid);
+                                win.end();
+                                if let Some(mut frst) = win.child(0) {
+                                    frst.resize(0, 0, win.w(), win.h());
+                                    win.resizable(&frst);
                                 }
+                                flag.store(true, Ordering::Relaxed);
                             }
                         }
                     }
-                    Err(e) => eprintln!("{}", e),
-                })?;
-            watcher.watch(&self.path, RecursiveMode::NonRecursive)?;
-        }
+                }
+                Err(e) => eprintln!("{}", e),
+            })?;
+        watcher.watch(&self.path, RecursiveMode::NonRecursive)?;
 
         self.a.run()?;
         Ok(())
