@@ -6,12 +6,18 @@ pub(crate) fn load(path: &Path) -> Option<Widget> {
     if let Ok(s) = std::fs::read_to_string(path) {
         if let Some(ext) = path.extension() {
             match ext.to_str() {
-                Some("xml") => serde_xml_rs::from_str(&s).map_err(|e| eprintln!("{}", e)).ok(),
+                Some("xml") => serde_xml_rs::from_str(&s)
+                    .map_err(|e| eprintln!("{}", e))
+                    .ok(),
                 Some("toml") => toml::from_str(&s).map_err(|e| eprintln!("{}", e)).ok(),
-                _ => serde_json5::from_str(&s).map_err(|e| eprintln!("{}", e)).ok(),
+                _ => serde_json5::from_str(&s)
+                    .map_err(|e| eprintln!("{}", e))
+                    .ok(),
             }
         } else {
-            serde_json5::from_str(&s).map_err(|e| eprintln!("{}", e)).ok()
+            serde_json5::from_str(&s)
+                .map_err(|e| eprintln!("{}", e))
+                .ok()
         }
     } else {
         None
@@ -31,7 +37,7 @@ macro_rules! handle_text {
             }
         }
         if let Some(sz) = $w.textsize {
-           $widget.set_text_size(sz);
+            $widget.set_text_size(sz);
         }
     };
 }
