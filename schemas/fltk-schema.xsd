@@ -30,6 +30,9 @@
         <xs:element name="maximum" type="xs:double" minOccurs="0" />
         <xs:element name="slidersize" type="xs:double" minOccurs="0" />
         <xs:element name="step" type="xs:double" minOccurs="0" />
+        <xs:element name="textcolor" type="xs:string" minOccurs="0" />
+        <xs:element name="textsize" type="xs:integer" minOccurs="0" />
+        <xs:element name="textfont" type="xs:integer" minOccurs="0" />
         <xs:element name="children" minOccurs="0">
           <xs:complexType>
             <xs:sequence>

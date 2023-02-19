@@ -1,5 +1,5 @@
 # fltk-decl
-Use a declarative language (json5, json, xml, toml) to describe your fltk-rs gui, with support for hot-reloading of your gui file. The crate is designed to be as permissive as possible. So wrong keys or values will be ignored.
+Use a declarative language (json5, json, xml, toml) to describe your fltk-rs gui, with support for hot-reloading of your gui file. The crate is designed to be as permissive as possible. So wrong keys or values will be ignored. Normally only changing a widget's id at runtime would cause an error!
 
 ## Usage
 In your Cargo.toml:
@@ -180,6 +180,9 @@ fn main() {
 - maximum: The valuator's maximum value (floating point number)
 - slidersize: The valuator's slider size (floating point number)
 - step: The valuator's step (floating point number)
+- textcolor: The widget's text color (string)
+- textsize: The widget's text size (integer)
+- textfont: The widget's font (integer)
 - children: an array of widgets representing the children of the widget (array of objects)
 
 ## Supported widgets:

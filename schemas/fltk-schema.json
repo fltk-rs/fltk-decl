@@ -128,6 +128,20 @@
                 "step": {
                     "type": "number",
                     "description": "Set a valuator's step"
+                },
+                "textcolor": {
+                    "type": "string",
+                    "description": "The widget's textcolor."
+                },
+                "textsize": {
+                    "type": "string",
+                    "description": "The widget's text size.",
+                    "minimum": 0
+                },
+                "textfont": {
+                    "type": "string",
+                    "description": "The widget's text font.",
+                    "minimum": 0
                 }
             }
         }

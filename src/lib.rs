@@ -45,6 +45,9 @@ struct Widget {
     maximum: Option<f64>,
     step: Option<f64>,
     slidersize: Option<f64>,
+    textfont: Option<i32>,
+    textsize: Option<i32>,
+    textcolor: Option<String>,
 }
 
 /// Entry point for your declarative app
@@ -62,7 +65,7 @@ pub struct DeclarativeApp {
 impl DeclarativeApp {
     /// Instantiate a new declarative app
     pub fn new<P: AsRef<Path>>(w: i32, h: i32, label: &str, path: P) -> Self {
-        let json = utils::load(path.as_ref()).expect("Failed to load widget data!");
+        let widget = utils::load(path.as_ref());
         let a = app::App::default().with_scheme(app::Scheme::Gtk);
         Self {
             a,
@@ -70,7 +73,7 @@ impl DeclarativeApp {
             h,
             label: label.to_string(),
             path: PathBuf::from(path.as_ref()),
-            widget: Some(json),
+            widget,
         }
     }
 

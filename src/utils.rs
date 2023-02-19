@@ -3,15 +3,37 @@ use fltk::{prelude::*, *};
 use std::path::Path;
 
 pub(crate) fn load(path: &Path) -> Option<Widget> {
-    let s = std::fs::read_to_string(path).expect("Invalid path!");
-    let path = path.to_str().unwrap();
-    if path.ends_with(".xml") {
-        serde_xml_rs::from_str(&s).ok()
-    } else if path.ends_with(".toml") {
-        toml::from_str(&s).ok()
+    if let Ok(s) = std::fs::read_to_string(path) {
+        if let Some(ext) = path.extension() {
+            match ext.to_str() {
+                Some("xml") => serde_xml_rs::from_str(&s).map_err(|e| eprintln!("{}", e)).ok(),
+                Some("toml") => toml::from_str(&s).map_err(|e| eprintln!("{}", e)).ok(),
+                _ => serde_json5::from_str(&s).map_err(|e| eprintln!("{}", e)).ok(),
+            }
+        } else {
+            serde_json5::from_str(&s).map_err(|e| eprintln!("{}", e)).ok()
+        }
     } else {
-        serde_json5::from_str(&s).ok()
+        None
     }
+}
+
+macro_rules! handle_text {
+    ($w: ident, $widget: ident) => {
+        if let Some(col) = &$w.textcolor {
+            if let Ok(col) = enums::Color::from_hex_str(col) {
+                $widget.set_text_color(col);
+            }
+        }
+        if let Some(f) = $w.textfont {
+            if f < 14 {
+                $widget.set_text_font(unsafe { std::mem::transmute(f) });
+            }
+        }
+        if let Some(sz) = $w.textsize {
+           $widget.set_text_size(sz);
+        }
+    };
 }
 
 pub(crate) fn handle_w<T>(w: &Widget, widget: &mut T)
@@ -70,8 +92,7 @@ where
         if v {
             if let Some(mut grp) = widget.as_group() {
                 grp.make_resizable(true);
-            } else {
-                let parent = widget.parent().unwrap();
+            } else if let Some(parent) = widget.parent() {
                 parent.resizable(widget);
             }
         }
@@ -80,14 +101,10 @@ where
         widget.set_tooltip(tip);
     }
     if let Some(path) = &w.image {
-        widget.set_image(Some(
-            image::SharedImage::load(path).expect("Failed to load image!"),
-        ));
+        widget.set_image(image::SharedImage::load(path).ok());
     }
     if let Some(path) = &w.deimage {
-        widget.set_deimage(Some(
-            image::SharedImage::load(path).expect("Failed to load image!"),
-        ));
+        widget.set_deimage(image::SharedImage::load(path).ok());
     }
     if let Some(sz) = w.labelsize {
         widget.set_label_size(sz);
@@ -115,9 +132,9 @@ where
             }
         }
         if let Some(f) = &w.shortcut {
-            b.set_shortcut(unsafe {
-                std::mem::transmute(f.parse::<i32>().expect("Failed to parse shortcut!"))
-            });
+            if let Ok(sh) = f.parse::<i32>() {
+                b.set_shortcut(unsafe { std::mem::transmute(sh) });
+            }
         }
     }
     if let Some(mut b) = valuator::Slider::from_dyn_widget(widget) {
@@ -208,58 +225,71 @@ pub(crate) fn transform(w: &Widget) {
         }
         "TextDisplay" => {
             let mut f = text::TextDisplay::default();
+            handle_text!(w, f);
             let buf = text::TextBuffer::default();
             f.set_buffer(buf);
             handle_w(w, &mut f);
         }
         "TextEditor" => {
             let mut f = text::TextEditor::default();
+            handle_text!(w, f);
             let buf = text::TextBuffer::default();
             f.set_buffer(buf);
             handle_w(w, &mut f);
         }
         "Input" => {
             let mut f = input::Input::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "IntInput" => {
             let mut f = input::IntInput::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "FloatInput" => {
             let mut f = input::FloatInput::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "SecretInput" => {
             let mut f = input::SecretInput::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "FileInput" => {
             let mut f = input::FileInput::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "MultilineInput" => {
             let mut f = input::MultilineInput::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "Output" => {
             let mut f = output::Output::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "MultilineOutput" => {
             let mut f = output::Output::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "MenuBar" => {
             let mut f = menu::MenuBar::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "SysMenuBar" => {
             let mut f = menu::SysMenuBar::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "Choice" => {
             let mut f = menu::Choice::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "Slider" => {
@@ -276,6 +306,7 @@ pub(crate) fn transform(w: &Widget) {
         }
         "ValueSlider" => {
             let mut f = valuator::ValueSlider::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "Dial" => {
@@ -308,10 +339,12 @@ pub(crate) fn transform(w: &Widget) {
         }
         "ValueInput" => {
             let mut f = valuator::ValueInput::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "ValueOutput" => {
             let mut f = valuator::ValueOutput::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "HorSlider" => {
@@ -328,6 +361,7 @@ pub(crate) fn transform(w: &Widget) {
         }
         "HorValueSlider" => {
             let mut f = valuator::HorValueSlider::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "Browser" => {
@@ -348,6 +382,7 @@ pub(crate) fn transform(w: &Widget) {
         }
         "CheckBrowser" => {
             let mut f = browser::CheckBrowser::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "MultiBrowser" => {
@@ -368,10 +403,12 @@ pub(crate) fn transform(w: &Widget) {
         }
         "Spinner" => {
             let mut f = misc::Spinner::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "Chart" => {
             let mut f = misc::Chart::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "Progress" => {
@@ -380,10 +417,12 @@ pub(crate) fn transform(w: &Widget) {
         }
         "InputChoice" => {
             let mut f = misc::InputChoice::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "HelpView" => {
             let mut f = misc::HelpView::default();
+            handle_text!(w, f);
             handle_w(w, &mut f);
         }
         _ => (),
