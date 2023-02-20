@@ -140,7 +140,32 @@ impl DeclarativeApp {
         Ok(())
     }
 
-    #[doc(hidden)]
+    /// Run the app without hot-reloading!
+    pub fn run_once<F: FnMut(&mut window::Window) + 'static>(
+        &self,
+        mut run_cb: F,
+    ) -> Result<(), Box<dyn std::error::Error>> {
+        let mut win = window::Window::default()
+            .with_size(self.w, self.h)
+            .with_label(&self.label);
+        if let Some(widget) = &self.widget {
+            utils::transform(widget);
+        }
+        win.end();
+        win.show();
+
+        if let Some(mut frst) = win.child(0) {
+            frst.resize(0, 0, win.w(), win.h());
+            win.resizable(&frst);
+        }
+
+        run_cb(&mut win);
+
+        self.a.run()?;
+        Ok(())
+    }
+
+    /// Just load the image of the window
     pub fn dump_image(&self) {
         let mut win = window::Window::default()
             .with_size(self.w, self.h)

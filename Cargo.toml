@@ -1,6 +1,6 @@
 [package]
 name = "fltk-decl"
-version = "0.1.5"
+version = "0.1.6"
 authors = ["MoAlyousef <mohammed.alyousef@neurosrg.com>"]
 edition = "2021"
 description = "Describe your fltk-rs app declaratively, supports hot-reloading!"
