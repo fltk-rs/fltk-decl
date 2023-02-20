@@ -70,9 +70,8 @@ Note that this crate uses json5, so you could just as easily change your gui.jso
 ```
 However, you lose vscode's auto-completion since json5 extensions in vscode don't support schemas.
 
-You could also use yaml:
+You could also use yaml (optionally along with a schema for autocompletion and validation):
 ```yaml
----
 # yaml-language-server: $schema=https://raw.githubusercontent.com/MoAlyousef/fltk-decl/main/schemas/fltk-schema.yaml
 
 widget: Column
