@@ -1,0 +1,115 @@
+---
+$id: https://raw.githubusercontent.com/MoAlyousef/fltk-decl/main/schemas/fltk-schema.json
+$schema: http://devicetree.org/meta-schemas/core.yaml#
+title: fltk-rs widget schema
+description: fltk-rs widget schema
+definitions:
+  widget:
+    type: object
+    required:
+    - widget
+    properties:
+      widget:
+        type: string
+        description: The widget type.
+      label:
+        type: string
+        description: The widget's label.
+      fixed:
+        type: integer
+        description: Whether the widget is fixed within a flex
+        minimum: 0
+      id:
+        type: string
+        description: The widget's id.
+      labelcolor:
+        type: string
+        description: The widget's labelcolor.
+      color:
+        type: string
+        description: The widget's color.
+      selectioncolor:
+        type: string
+        description: The widget's color.
+      children:
+        type: array
+        items:
+          "$ref": "#/definitions/widget"
+        default: []
+      hide:
+        type: boolean
+        description: The widget is hidden
+      visible:
+        type: boolean
+        description: The widget is shown
+      deactivate:
+        type: boolean
+        description: The widget is deactivated
+      resizable:
+        type: boolean
+        description: The widget is resizable
+      tooltip:
+        type: string
+        description: The widget's tooltip
+      image:
+        type: string
+        description: A path to the widget's image
+      deimage:
+        type: string
+        description: A path to the widget's deactivated image
+      labelfont:
+        type: integer
+        description: The widget label's font
+        minimum: 0
+      labelsize:
+        type: integer
+        description: The widget label's size
+        minimum: 0
+      align:
+        type: integer
+        description: The label's alignment
+        minimum: 0
+      when:
+        type: integer
+        description: The widget's callback trigger
+        minimum: 0
+      frame:
+        type: integer
+        description: The widget's frame
+        minimum: 0
+      downframe:
+        type: integer
+        description: The button's downframe
+        minimum: 0
+      shortcut:
+        type: string
+        description: The button's shortcut
+      pad:
+        type: integer
+        description: Set a flex's pad
+        minimum: 0
+      minimun:
+        type: number
+        description: Set a valuator's minimum
+      maximum:
+        type: number
+        description: Set a valuator's maximum
+      slidersize:
+        type: number
+        description: Set a valuator's slidersize
+      step:
+        type: number
+        description: Set a valuator's step
+      textcolor:
+        type: string
+        description: The widget's textcolor.
+      textsize:
+        type: string
+        description: The widget's text size.
+        minimum: 0
+      textfont:
+        type: string
+        description: The widget's text font.
+        minimum: 0
+type: object
+"$ref": "#/definitions/widget"
