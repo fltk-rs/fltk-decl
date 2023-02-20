@@ -1,5 +1,5 @@
 # fltk-decl
-Use a declarative language (json5, json, xml, toml) to describe your fltk-rs gui, with support for hot-reloading of your gui file. The crate is designed to be as permissive as possible. So wrong keys or values will be ignored. Normally only changing a widget's id at runtime would cause an error!
+Use a declarative language (json5, json, yaml, xml, toml) to describe your fltk-rs gui, with support for hot-reloading of your gui file. The crate is designed to be as permissive as possible. So wrong keys or values will be ignored. Normally only changing a widget's id at runtime would cause an error!
 
 ## Usage
 In your Cargo.toml:
@@ -69,6 +69,32 @@ Note that this crate uses json5, so you could just as easily change your gui.jso
 }
 ```
 However, you lose vscode's auto-completion since json5 extensions in vscode don't support schemas.
+
+You could also use yaml:
+```yaml
+---
+widget: Column
+children:
+- widget: Button
+  label: Inc
+  fixed: 60
+  id: inc
+  labelcolor: "#0000ff"
+- widget: Row
+  children:
+  - widget: Frame
+    fixed: 30
+  - widget: Frame
+    label: '0'
+    id: result
+    labelcolor: "#ff0000"
+  - widget: Frame
+    fixed: 30
+- widget: Button
+  label: Dec
+  fixed: 60
+  id: dec
+```
 
 You could also use xml:
 `gui.xml`

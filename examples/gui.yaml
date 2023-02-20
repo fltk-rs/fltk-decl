@@ -1,0 +1,22 @@
+---
+widget: Column
+children:
+- widget: Button
+  label: Inc
+  fixed: 60
+  id: inc
+  labelcolor: "#0000ff"
+- widget: Row
+  children:
+  - widget: Frame
+    fixed: 30
+  - widget: Frame
+    label: '0'
+    id: result
+    labelcolor: "#ff0000"
+  - widget: Frame
+    fixed: 30
+- widget: Button
+  label: Dec
+  fixed: 60
+  id: dec

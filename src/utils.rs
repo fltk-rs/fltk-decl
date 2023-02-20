@@ -10,6 +10,7 @@ pub(crate) fn load(path: &Path) -> Option<Widget> {
                     .map_err(|e| eprintln!("{}", e))
                     .ok(),
                 Some("toml") => toml::from_str(&s).map_err(|e| eprintln!("{}", e)).ok(),
+                Some("yaml") => serde_yaml::from_str(&s).map_err(|e| eprintln!("{}", e)).ok(),
                 _ => serde_json5::from_str(&s)
                     .map_err(|e| eprintln!("{}", e))
                     .ok(),
