@@ -73,6 +73,8 @@ However, you lose vscode's auto-completion since json5 extensions in vscode don'
 You could also use yaml:
 ```yaml
 ---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/MoAlyousef/fltk-decl/main/schemas/fltk-schema.yaml
+
 widget: Column
 children:
 - widget: Button
