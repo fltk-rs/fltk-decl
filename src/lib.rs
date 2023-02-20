@@ -127,6 +127,7 @@ impl DeclarativeApp {
                                     frst.resize(0, 0, win.w(), win.h());
                                     win.resizable(&frst);
                                 }
+                                app::redraw();
                                 flag.store(true, Ordering::Relaxed);
                             }
                         }
