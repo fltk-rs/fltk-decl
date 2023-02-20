@@ -104,11 +104,11 @@ definitions:
         type: string
         description: The widget's textcolor.
       textsize:
-        type: string
+        type: integer
         description: The widget's text size.
         minimum: 0
       textfont:
-        type: string
+        type: integer
         description: The widget's text font.
         minimum: 0
 type: object

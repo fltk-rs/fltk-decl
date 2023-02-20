@@ -134,13 +134,13 @@
                     "description": "The widget's textcolor."
                 },
                 "textsize": {
-                    "type": "string",
-                    "description": "The widget's text size.",
+                    "type": "integer",
+                    "description": "The widget text's size",
                     "minimum": 0
                 },
                 "textfont": {
-                    "type": "string",
-                    "description": "The widget's text font.",
+                    "type": "integer",
+                    "description": "The widget text's font",
                     "minimum": 0
                 }
             }
