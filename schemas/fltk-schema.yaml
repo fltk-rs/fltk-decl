@@ -1,5 +1,5 @@
 ---
-$id: https://raw.githubusercontent.com/MoAlyousef/fltk-decl/main/schemas/fltk-schema.json
+$id: https://raw.githubusercontent.com/MoAlyousef/fltk-decl/main/schemas/fltk-schema.yaml
 $schema: http://devicetree.org/meta-schemas/core.yaml#
 title: fltk-rs widget schema
 description: fltk-rs widget schema
