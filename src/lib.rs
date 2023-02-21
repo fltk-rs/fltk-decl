@@ -16,6 +16,17 @@ use std::{
 
 mod utils;
 
+#[doc(hidden)]
+#[derive(Debug, Clone, Copy)]
+pub enum DataFormat {
+    Json,
+    Json5,
+    Yaml,
+    Xml,
+    Toml,
+    Unknown,
+}
+
 #[derive(Clone, Debug, Serialize, Deserialize)]
 struct Widget {
     widget: String,
@@ -58,7 +69,7 @@ pub struct DeclarativeApp {
     h: i32,
     label: String,
     #[allow(dead_code)]
-    path: PathBuf,
+    path: Option<PathBuf>,
     widget: Option<Widget>,
 }
 
@@ -72,7 +83,21 @@ impl DeclarativeApp {
             w,
             h,
             label: label.to_string(),
-            path: PathBuf::from(path.as_ref()),
+            path: Some(PathBuf::from(path.as_ref())),
+            widget,
+        }
+    }
+
+    /// Instantiate a new declarative app
+    pub fn from_str(w: i32, h: i32, label: &str, s: &str, format: DataFormat) -> Self {
+        let widget = utils::load_from_str(s, format);
+        let a = app::App::default().with_scheme(app::Scheme::Gtk);
+        Self {
+            a,
+            w,
+            h,
+            label: label.to_string(),
+            path: None,
             widget,
         }
     }
@@ -83,61 +108,66 @@ impl DeclarativeApp {
         &self,
         mut run_cb: F,
     ) -> Result<(), Box<dyn std::error::Error>> {
-        let mut win = window::Window::default()
-            .with_size(self.w, self.h)
-            .with_label(&self.label);
-        if let Some(widget) = &self.widget {
-            utils::transform(widget);
-        }
-        win.end();
-        win.show();
-
-        if let Some(mut frst) = win.child(0) {
-            frst.resize(0, 0, win.w(), win.h());
-            win.resizable(&frst);
-        }
-
-        run_cb(&mut win);
-
-        let flag = Arc::new(AtomicBool::new(false));
-        app::add_timeout3(0.1, {
-            let flag = flag.clone();
-            let mut win = win.clone();
-            move |_t| {
-                if flag.load(Ordering::Relaxed) {
-                    run_cb(&mut win);
-                    flag.store(false, Ordering::Relaxed);
-                }
-                app::repeat_timeout3(0.1, _t);
+        if let Some(path) = &self.path {
+            let mut win = window::Window::default()
+                .with_size(self.w, self.h)
+                .with_label(&self.label);
+            if let Some(widget) = &self.widget {
+                utils::transform(widget);
             }
-        });
+            win.end();
+            win.show();
 
-        let path = self.path.clone();
-        let mut watcher =
-            notify::recommended_watcher(move |res: Result<Event, notify::Error>| match res {
-                Ok(event) => {
-                    if let EventKind::Access(AccessKind::Close(mode)) = event.kind {
-                        if mode == AccessMode::Write {
-                            if let Some(wid) = utils::load(&path) {
-                                win.clear();
-                                win.begin();
-                                utils::transform(&wid);
-                                win.end();
-                                if let Some(mut frst) = win.child(0) {
-                                    frst.resize(0, 0, win.w(), win.h());
-                                    win.resizable(&frst);
+            if let Some(mut frst) = win.child(0) {
+                frst.resize(0, 0, win.w(), win.h());
+                win.resizable(&frst);
+            }
+
+            run_cb(&mut win);
+
+            let flag = Arc::new(AtomicBool::new(false));
+            app::add_timeout3(0.1, {
+                let flag = flag.clone();
+                let mut win = win.clone();
+                move |_t| {
+                    if flag.load(Ordering::Relaxed) {
+                        run_cb(&mut win);
+                        flag.store(false, Ordering::Relaxed);
+                    }
+                    app::repeat_timeout3(0.1, _t);
+                }
+            });
+
+            let mut watcher = notify::recommended_watcher({
+                let path = path.clone();
+                move |res: Result<Event, notify::Error>| match res {
+                    Ok(event) => {
+                        if let EventKind::Access(AccessKind::Close(mode)) = event.kind {
+                            if mode == AccessMode::Write {
+                                if let Some(wid) = utils::load(&path) {
+                                    win.clear();
+                                    win.begin();
+                                    utils::transform(&wid);
+                                    win.end();
+                                    if let Some(mut frst) = win.child(0) {
+                                        frst.resize(0, 0, win.w(), win.h());
+                                        win.resizable(&frst);
+                                    }
+                                    app::redraw();
+                                    flag.store(true, Ordering::Relaxed);
                                 }
-                                app::redraw();
-                                flag.store(true, Ordering::Relaxed);
                             }
                         }
                     }
+                    Err(e) => eprintln!("{}", e),
                 }
-                Err(e) => eprintln!("{}", e),
             })?;
-        watcher.watch(&self.path, RecursiveMode::NonRecursive)?;
+            watcher.watch(path, RecursiveMode::NonRecursive)?;
 
-        self.a.run()?;
+            self.a.run()?;
+        } else {
+            self.run_once(run_cb)?;
+        }
         Ok(())
     }
 
