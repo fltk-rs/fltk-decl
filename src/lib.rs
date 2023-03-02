@@ -7,7 +7,7 @@ use notify::{
 };
 use serde_derive::{Deserialize, Serialize};
 use std::{
-    path::{Path, PathBuf},
+    path::PathBuf,
     sync::{
         atomic::{AtomicBool, Ordering},
         Arc,
@@ -16,19 +16,8 @@ use std::{
 
 mod utils;
 
-#[doc(hidden)]
-#[derive(Debug, Clone, Copy)]
-pub enum DataFormat {
-    Json,
-    Json5,
-    Yaml,
-    Xml,
-    Toml,
-    Unknown,
-}
-
 #[derive(Clone, Debug, Serialize, Deserialize)]
-struct Widget {
+pub struct Widget {
     widget: String,
     label: Option<String>,
     id: Option<String>,
@@ -69,28 +58,35 @@ pub struct DeclarativeApp {
     h: i32,
     label: String,
     #[allow(dead_code)]
-    path: Option<PathBuf>,
+    path: Option<&'static str>,
     widget: Option<Widget>,
+    load_fn: fn(&'static str) -> Option<Widget>,
 }
 
 impl DeclarativeApp {
     /// Instantiate a new declarative app
-    pub fn new<P: AsRef<Path>>(w: i32, h: i32, label: &str, path: P) -> Self {
-        let widget = utils::load(path.as_ref());
+    pub fn new(
+        w: i32,
+        h: i32,
+        label: &str,
+        path: &'static str,
+        load_fn: fn(&'static str) -> Option<Widget>,
+    ) -> Self {
+        let widget = load_fn(path);
         let a = app::App::default().with_scheme(app::Scheme::Gtk);
         Self {
             a,
             w,
             h,
             label: label.to_string(),
-            path: Some(PathBuf::from(path.as_ref())),
+            path: Some(path),
             widget,
+            load_fn,
         }
     }
 
     /// Instantiate a new declarative app
-    pub fn from_str(w: i32, h: i32, label: &str, s: &str, format: DataFormat) -> Self {
-        let widget = utils::load_from_str(s, format);
+    pub fn new_inline(w: i32, h: i32, label: &str, widget: Option<Widget>) -> Self {
         let a = app::App::default().with_scheme(app::Scheme::Gtk);
         Self {
             a,
@@ -99,6 +95,7 @@ impl DeclarativeApp {
             label: label.to_string(),
             path: None,
             widget,
+            load_fn: |_| None,
         }
     }
 
@@ -138,13 +135,14 @@ impl DeclarativeApp {
                 }
             });
 
+            let load_fn = self.load_fn;
             let mut watcher = notify::recommended_watcher({
-                let path = path.clone();
+                let path = <&str>::clone(path);
                 move |res: Result<Event, notify::Error>| match res {
                     Ok(event) => {
                         if let EventKind::Access(AccessKind::Close(mode)) = event.kind {
                             if mode == AccessMode::Write {
-                                if let Some(wid) = utils::load(&path) {
+                                if let Some(wid) = (load_fn)(path) {
                                     win.clear();
                                     win.begin();
                                     utils::transform(&wid);
@@ -162,7 +160,7 @@ impl DeclarativeApp {
                     Err(e) => eprintln!("{}", e),
                 }
             })?;
-            watcher.watch(path, RecursiveMode::NonRecursive)?;
+            watcher.watch(&PathBuf::from(path), RecursiveMode::NonRecursive)?;
 
             self.a.run()?;
         } else {

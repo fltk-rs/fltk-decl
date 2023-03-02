@@ -1,41 +1,5 @@
 use crate::Widget;
 use fltk::{prelude::*, *};
-use std::path::Path;
-
-pub(crate) fn load(path: &Path) -> Option<Widget> {
-    if let Ok(s) = std::fs::read_to_string(path) {
-        use crate::DataFormat::*;
-        if let Some(ext) = path.extension() {
-            let typ = match ext.to_str() {
-                Some("xml") => Xml,
-                Some("json") => Json,
-                Some("Json5") => Json5,
-                Some("yaml") => Yaml,
-                Some("toml") => Toml,
-                _ => Unknown,
-            };
-            load_from_str(&s, typ)
-        } else {
-            None
-        }
-    } else {
-        None
-    }
-}
-
-pub(crate) fn load_from_str(s: &str, typ: crate::DataFormat) -> Option<Widget> {
-    use crate::DataFormat::*;
-    match typ {
-        Xml => serde_xml_rs::from_str(s)
-            .map_err(|e| eprintln!("{}", e))
-            .ok(),
-        Toml => toml::from_str(s).map_err(|e| eprintln!("{}", e)).ok(),
-        Yaml => serde_yaml::from_str(s).map_err(|e| eprintln!("{}", e)).ok(),
-        Json | Json5 | Unknown => serde_json5::from_str(s)
-            .map_err(|e| eprintln!("{}", e))
-            .ok(),
-    }
-}
 
 macro_rules! handle_text {
     ($w: ident, $widget: ident) => {
@@ -60,7 +24,7 @@ where
     T: Clone + Send + Sync + WidgetExt + 'static,
 {
     if let Some(id) = &w.id {
-        widget.set_id(Box::leak(id.clone().into_boxed_str()));
+        widget.set_id(id);
     }
     if let Some(label) = &w.label {
         widget.set_label(label);

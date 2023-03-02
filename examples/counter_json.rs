@@ -1,5 +1,5 @@
 use fltk::{prelude::*, *};
-use fltk_decl::DeclarativeApp;
+use fltk_decl::{DeclarativeApp, Widget};
 
 // use the extension you require!
 const PATH: &str = "examples/gui.json";
@@ -23,9 +23,14 @@ fn btn_cb(b: &mut button::Button) {
     state.with(move |s| s.increment(val));
 }
 
+fn load_fn(path: &'static str) -> Option<Widget> {
+    let s = std::fs::read_to_string(path).ok()?;
+    serde_json5::from_str(&s).map_err(|e| eprintln!("{e}")).ok()
+}
+
 fn main() {
     app::GlobalState::new(State { count: 0 });
-    DeclarativeApp::new(200, 300, "MyApp", PATH)
+    DeclarativeApp::new(200, 300, "MyApp", PATH, load_fn)
         .run(|_win| {
             app::set_scheme(app::Scheme::Oxy);
             if let Some(mut btn) = app::widget_from_id::<button::Button>("inc") {

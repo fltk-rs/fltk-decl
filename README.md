@@ -1,14 +1,26 @@
 # fltk-decl
-Use a declarative language (json5, json, yaml, xml, toml) to describe your fltk-rs gui, with support for hot-reloading of your gui file. The crate is designed to be as permissive as possible. So wrong keys or values will be ignored. Normally only changing a widget's id at runtime would cause an error!
+Use a declarative language (json5, json, yaml, xml, toml, s-exp) to describe your fltk-rs gui, with support for hot-reloading of your gui file. The crate is designed to be as permissive as possible. So wrong keys or values will be ignored. Normally only changing a widget's id at runtime would cause an error!
 
 ## Usage
+Assuming we're using json for our gui description, we'll pull fltk-decl, fltk and the deserialization library that we require, in this case it's serde_json:
 In your Cargo.toml:
 ```toml
 [dependencies]
 fltk-decl = "0.1"
+fltk = "1.3.32"
+serde_json = "1"
 ```
 
-Create a json file, let's call it gui.json.
+For the other data formats, you can pull the respective deserialization library:
+```toml
+serde_json5 = "0.1" # for json5
+serde-xml-rs = "0.6" # for xml
+serde_yaml = "0.9" # for yaml
+toml = "0.7" # for toml
+serde-lexpr = "0.1.2" # for an s-expression description
+```
+
+Since we're gonna use json, we'll create a json file and let's call it gui.json:
 ```json
 {
     "$schema": "https://raw.githubusercontent.com/MoAlyousef/fltk-decl/main/schemas/fltk-schema.json",
@@ -52,7 +64,79 @@ Create a json file, let's call it gui.json.
 ```
 Notice we point to the schema to get auto-completion and hinting on vscode, otherwise it's optional.
 
-Note that this crate uses json5, so you could just as easily change your gui.json to gui.json5 (to benefit from comments, trailing commas and unquoted keys!):
+Import it into your app:
+```rust
+use fltk_decl::{DeclarativeApp, Widget};
+
+// declare how you would like to deserialize
+fn load_fn(path: &'static str) -> Option<Widget> {
+    let s = std::fs::read_to_string(path).ok()?;
+    // We want to see the serde error on the command line while we're developing
+    serde_json::from_str(&s).map_err(|e| eprintln!("{e}")).ok()
+}
+
+fn main() {
+    // use the filetype and extension that you require.
+    // `run` a callback that runs at least once, or whenever the gui file changes.
+    DeclarativeApp::new(200, 300, "MyApp", "examples/gui.json", load_fn).run(|_| {}).unwrap();
+}
+```
+
+To handle callbacks:
+```rust
+use fltk::{prelude::*, *};
+use fltk_decl::{DeclarativeApp, Widget};
+
+// use the extension you require!
+const PATH: &str = "examples/gui.json";
+
+#[derive(Clone, Copy)]
+struct State {
+    count: i32,
+}
+
+impl State {
+    pub fn increment(&mut self, val: i32) {
+        let mut result: frame::Frame = app::widget_from_id("result").unwrap();
+        self.count += val;
+        result.set_label(&self.count.to_string());
+    }
+}
+
+fn btn_cb(b: &mut button::Button) {
+    let state = app::GlobalState::<State>::get();
+    let val = if b.label() == "Inc" {
+        1
+    } else {
+        -1
+    };
+    state.with(move |s| s.increment(val));
+}
+
+fn load_fn(path: &'static str) -> Option<Widget> {
+    let s = std::fs::read_to_string(path).ok()?;
+    serde_json::from_str(&s).map_err(|e| eprintln!("{e}")).ok()
+}
+
+fn main() {
+    app::GlobalState::new(State { count: 0 });
+    DeclarativeApp::new(200, 300, "MyApp", PATH, load_fn)
+        .run(|_win| {
+            app::set_scheme(app::Scheme::Oxy);
+            if let Some(mut btn) = app::widget_from_id::<button::Button>("inc") {
+                btn.set_callback(btn_cb);
+            }
+            if let Some(mut btn) = app::widget_from_id::<button::Button>("dec") {
+                btn.set_callback(btn_cb);
+            }
+        })
+        .unwrap();
+}
+```
+
+## Other data formats:
+
+You can choose json5 (to benefit from comments, trailing commas and unquoted keys!):
 ```json5
 {
     // main column
@@ -113,7 +197,7 @@ You could also use xml:
 ```
 
 or toml!
-```
+```toml
 widget = "Column"
 
 [[children]]
@@ -122,62 +206,32 @@ label = "Click Me"
 id = "my_button"
 ```
 
-Import it into your app:
-```rust
-use fltk_decl::DeclarativeApp;
-
-fn main() {
-    // use the filetype and extension that you require.
-    // `run` a callback that runs at least once, or whenever the gui file changes.
-    DeclarativeApp::new(200, 300, "MyApp", "gui.json").run(true, |_main_win| {});
-}
-```
-
-To handle callbacks:
-```rust
-use fltk::{prelude::*, *};
-use fltk_decl::DeclarativeApp;
-
-// use the extension you require!
-const PATH: &str = "examples/gui.json";
-
-#[derive(Clone, Copy)]
-struct State {
-    count: i32,
-}
-
-impl State {
-    pub fn increment(&mut self, val: i32) {
-        let mut result: frame::Frame = app::widget_from_id("result").unwrap();
-        self.count += val;
-        result.set_label(&self.count.to_string());
-    }
-}
-
-fn btn_cb(b: &mut button::Button) {
-    let state = app::GlobalState::<State>::get();
-    let val = if b.label() == "Inc" {
-        1
-    } else {
-        -1
-    };
-    state.with(move |s| s.increment(val));
-}
-
-fn main() {
-    app::GlobalState::new(State { count: 0 });
-    DeclarativeApp::new(200, 300, "MyApp", PATH)
-        .run(|_win| {
-            app::set_scheme(app::Scheme::Oxy);
-            if let Some(mut btn) = app::widget_from_id::<button::Button>("inc") {
-                btn.set_callback(btn_cb);
-            }
-            if let Some(mut btn) = app::widget_from_id::<button::Button>("dec") {
-                btn.set_callback(btn_cb);
-            }
-        })
-        .unwrap();
-}
+or s-expression format:
+```scheme
+(
+    (widget . "Column") 
+    (children (
+        (
+            (widget . "Button") 
+            (label "Inc") 
+            (id "inc") 
+            (fixed 60) 
+            (labelcolor "#0000ff")
+        )
+        (
+            (widget . "Frame")
+            (id "result")
+            (label "0")
+        )
+        (
+            (widget . "Button") 
+            (label "Dec") 
+            (id "dec") 
+            (fixed 60) 
+            (labelcolor "#ff0000")
+        )
+    ))
+)
 ```
 
 ## Supported properties:
