@@ -14,6 +14,7 @@ use std::{
     },
 };
 
+mod frames;
 mod utils;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -37,8 +38,8 @@ pub struct Widget {
     labelsize: Option<i32>,
     align: Option<i32>,
     when: Option<i32>,
-    frame: Option<u32>,
-    downframe: Option<u32>,
+    frame: Option<String>,
+    downframe: Option<String>,
     shortcut: Option<String>,
     pad: Option<i32>,
     minimum: Option<f64>,
@@ -83,6 +84,44 @@ impl DeclarativeApp {
             widget,
             load_fn,
         }
+    }
+
+    #[cfg(feature = "json")]
+    pub fn new_json(w: i32, h: i32, label: &str, path: &'static str) -> Self {
+        fn load_fn(path: &'static str) -> Option<Widget> {
+            let s = std::fs::read_to_string(path).ok()?;
+            serde_json::from_str(&s).map_err(|e| eprintln!("{e}")).ok()
+        }
+        Self::new(w, h, label, path, load_fn)
+    }
+
+    #[cfg(feature = "json5")]
+    pub fn new_json5(w: i32, h: i32, label: &str, path: &'static str) -> Self {
+        fn load_fn(path: &'static str) -> Option<Widget> {
+            let s = std::fs::read_to_string(path).ok()?;
+            serde_json5::from_str(&s).map_err(|e| eprintln!("{e}")).ok()
+        }
+        Self::new(w, h, label, path, load_fn)
+    }
+
+    #[cfg(feature = "xml")]
+    pub fn new_xml(w: i32, h: i32, label: &str, path: &'static str) -> Self {
+        fn load_fn(path: &'static str) -> Option<Widget> {
+            let s = std::fs::read_to_string(path).ok()?;
+            serde_xml_rs::from_str(&s)
+                .map_err(|e| eprintln!("{e}"))
+                .ok()
+        }
+        Self::new(w, h, label, path, load_fn)
+    }
+
+    #[cfg(feature = "yaml")]
+    pub fn new_yaml(w: i32, h: i32, label: &str, path: &'static str) -> Self {
+        fn load_fn(path: &'static str) -> Option<Widget> {
+            let s = std::fs::read_to_string(path).ok()?;
+            serde_yaml::from_str(&s).map_err(|e| eprintln!("{e}")).ok()
+        }
+        Self::new(w, h, label, path, load_fn)
     }
 
     /// Instantiate a new declarative app

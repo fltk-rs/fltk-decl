@@ -2,11 +2,125 @@
 Use a declarative language (json5, json, yaml, xml, toml, s-exp) to describe your fltk-rs gui, with support for hot-reloading of your gui file. The crate is designed to be as permissive as possible. So wrong keys or values will be ignored. Normally only changing a widget's id at runtime would cause an error!
 
 ## Usage
+
+### Using a fixed format, using features
+Assuming we're using json for our gui description, we'll pull fltk-decl and fltk. We'll specify the feature that we need to be json since we're using json. In your Cargo.toml:
+```toml
+[dependencies]
+fltk-decl = { version = "0.2", features = ["json"] }
+fltk = "1.3.32"
+```
+For other formats, replace the json feature with your required feature. Possible values (json, json5, yaml, xml).
+
+Since we're gonna use json, we'll create a json file and let's call it gui.json:
+```json
+{
+    "$schema": "https://raw.githubusercontent.com/MoAlyousef/fltk-decl/main/schemas/fltk-schema.json",
+    "widget": "Column",
+    "children": [
+        {
+            "widget": "Button",
+            "label": "Inc",
+            "fixed": 60,
+            "id": "inc",
+            "labelcolor": "#0000ff"
+
+        },
+        {
+            "widget": "Row",
+            "children": [
+                {
+                    "widget": "Frame",
+                    "fixed": 30
+                },
+                {
+                    "widget": "Frame",
+                    "label": "0",
+                    "id": "result",
+                    "labelcolor": "#ff0000"
+                },
+                {
+                    "widget": "Frame",
+                    "fixed": 30
+                }
+            ]
+        },
+        {
+            "widget": "Button",
+            "label": "Dec",
+            "fixed": 60,
+            "id": "dec"
+        }
+    ]
+}
+```
+Notice we point to the schema to get auto-completion and hinting on vscode, otherwise it's optional.
+
+Import it into your app:
+```rust,ignore
+use fltk_decl::{DeclarativeApp, Widget};
+
+fn main() {
+    // use the filetype and extension that you require.
+    // `run` a callback that runs at least once, or whenever the gui file changes.
+    DeclarativeApp::new_json(200, 300, "MyApp", "examples/gui.json").run(|_| {}).unwrap();
+}
+```
+Notice we use new_json which is made available by the json feature. The constructor comes in the form of `DeclarativeApp::new` or `DeclarativeApp::new_<feature>`, ex. new_json5, new_yaml, new_xml!
+
+To handle callbacks:
+```rust,ignore
+use fltk::{prelude::*, *};
+use fltk_decl::{DeclarativeApp, Widget};
+
+// use the extension you require!
+const PATH: &str = "examples/gui.json";
+
+#[derive(Clone, Copy)]
+struct State {
+    count: i32,
+}
+
+impl State {
+    pub fn increment(&mut self, val: i32) {
+        let mut result: frame::Frame = app::widget_from_id("result").unwrap();
+        self.count += val;
+        result.set_label(&self.count.to_string());
+    }
+}
+
+fn btn_cb(b: &mut button::Button) {
+    let state = app::GlobalState::<State>::get();
+    let val = if b.label() == "Inc" {
+        1
+    } else {
+        -1
+    };
+    state.with(move |s| s.increment(val));
+}
+
+fn main() {
+    app::GlobalState::new(State { count: 0 });
+    DeclarativeApp::new_json(200, 300, "MyApp", PATH)
+        .run(|_win| {
+            app::set_scheme(app::Scheme::Oxy);
+            if let Some(mut btn) = app::widget_from_id::<button::Button>("inc") {
+                btn.set_callback(btn_cb);
+            }
+            if let Some(mut btn) = app::widget_from_id::<button::Button>("dec") {
+                btn.set_callback(btn_cb);
+            }
+        })
+        .unwrap();
+}
+```
+
+### Flexible, using any serde format and using a loading function (requires no features)
 Assuming we're using json for our gui description, we'll pull fltk-decl, fltk and the deserialization library that we require, in this case it's serde_json:
 In your Cargo.toml:
 ```toml
 [dependencies]
-fltk-decl = "0.1"
+fltk-decl = "0.2"
 fltk = "1.3.32"
 serde_json = "1"
 ```
@@ -65,14 +179,14 @@ Since we're gonna use json, we'll create a json file and let's call it gui.json:
 Notice we point to the schema to get auto-completion and hinting on vscode, otherwise it's optional.
 
 Import it into your app:
-```rust
+```rust,no_run
 use fltk_decl::{DeclarativeApp, Widget};
 
 // declare how you would like to deserialize
 fn load_fn(path: &'static str) -> Option<Widget> {
     let s = std::fs::read_to_string(path).ok()?;
     // We want to see the serde error on the command line while we're developing
-    serde_json::from_str(&s).map_err(|e| eprintln!("{e}")).ok()
+    serde_json5::from_str(&s).map_err(|e| eprintln!("{e}")).ok()
 }
 
 fn main() {
@@ -115,7 +229,7 @@ fn btn_cb(b: &mut button::Button) {
 
 fn load_fn(path: &'static str) -> Option<Widget> {
     let s = std::fs::read_to_string(path).ok()?;
-    serde_json::from_str(&s).map_err(|e| eprintln!("{e}")).ok()
+    serde_json5::from_str(&s).map_err(|e| eprintln!("{e}")).ok()
 }
 
 fn main() {
@@ -253,8 +367,8 @@ or s-expression format:
 - labelsize: The label size (integer)
 - align: The label's alignment (integer)
 - when: The widget's callback trigger (integer)
-- frame: The widget's frame type (integer)
-- downframe: The widget's down_frame type, for buttons (integer)
+- frame: The widget's frame type (string)
+- downframe: The widget's down_frame type, for buttons (string)
 - shortcut: The widget's shortcut, for buttons (string)
 - pad: The Flex's padding (integer)
 - minimun: The valuator's minimum value (floating point number)

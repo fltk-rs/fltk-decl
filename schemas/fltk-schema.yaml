@@ -74,13 +74,11 @@ definitions:
         description: The widget's callback trigger
         minimum: 0
       frame:
-        type: integer
+        type: string
         description: The widget's frame
-        minimum: 0
       downframe:
-        type: integer
+        type: string
         description: The button's downframe
-        minimum: 0
       shortcut:
         type: string
         description: The button's shortcut

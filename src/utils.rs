@@ -103,15 +103,15 @@ where
             widget.set_label_font(unsafe { std::mem::transmute(f) });
         }
     }
-    if let Some(f) = w.frame {
-        if f < 50 {
-            widget.set_frame(unsafe { std::mem::transmute(f) });
+    if let Some(f) = &w.frame {
+        if let Some(f) = crate::frames::get_frame(f) {
+            widget.set_frame(f);
         }
     }
     if let Some(mut b) = button::Button::from_dyn_widget(widget) {
-        if let Some(f) = w.downframe {
-            if f < 50 {
-                b.set_down_frame(unsafe { std::mem::transmute(f) });
+        if let Some(f) = &w.downframe {
+            if let Some(f) = crate::frames::get_frame(f) {
+                b.set_down_frame(f);
             }
         }
         if let Some(f) = &w.shortcut {

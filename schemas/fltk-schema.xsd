@@ -22,8 +22,8 @@
         <xs:element name="labelsize" type="xs:integer" minOccurs="0" />
         <xs:element name="align" type="xs:integer" minOccurs="0" />
         <xs:element name="when" type="xs:integer" minOccurs="0" />
-        <xs:element name="frame" type="xs:integer" minOccurs="0" />
-        <xs:element name="downframe" type="xs:integer" minOccurs="0" />
+        <xs:element name="frame" type="xs:string" minOccurs="0" />
+        <xs:element name="downframe" type="xs:string" minOccurs="0" />
         <xs:element name="shortcut" type="xs:string" minOccurs="0" />
         <xs:element name="pad" type="xs:integer" minOccurs="0" />
         <xs:element name="minimum" type="xs:double" minOccurs="0" />
