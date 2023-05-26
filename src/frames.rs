@@ -58,5 +58,5 @@ pub const FRAMES: &[&str] = &[
 ];
 
 pub(crate) fn get_frame(s: &str) -> Option<usize> {
-    FRAMES.iter().position(|&x| x==s)
+    FRAMES.iter().position(|&x| x == s)
 }

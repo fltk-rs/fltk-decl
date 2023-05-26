@@ -2,7 +2,7 @@
 
 use fltk::{prelude::*, *};
 use notify::{
-    event::{AccessKind, AccessMode, EventKind},
+    event::{AccessKind, AccessMode, DataChange, EventKind, ModifyKind},
     Event, RecursiveMode, Watcher,
 };
 use serde_derive::{Deserialize, Serialize};
@@ -179,20 +179,30 @@ impl DeclarativeApp {
                 let path = <&str>::clone(path);
                 move |res: Result<Event, notify::Error>| match res {
                     Ok(event) => {
-                        if let EventKind::Access(AccessKind::Close(mode)) = event.kind {
-                            if mode == AccessMode::Write {
-                                if let Some(wid) = (load_fn)(path) {
-                                    win.clear();
-                                    win.begin();
-                                    utils::transform(&wid);
-                                    win.end();
-                                    if let Some(mut frst) = win.child(0) {
-                                        frst.resize(0, 0, win.w(), win.h());
-                                        win.resizable(&frst);
-                                    }
-                                    app::redraw();
-                                    flag.store(true, Ordering::Relaxed);
+                        let mut needs_update = false;
+                        match event.kind {
+                            EventKind::Access(AccessKind::Close(mode)) => {
+                                if mode == AccessMode::Write {
+                                    needs_update = true;
                                 }
+                            }
+                            EventKind::Modify(ModifyKind::Data(DataChange::Content)) => {
+                                needs_update = true;
+                            }
+                            _ => (),
+                        }
+                        if needs_update {
+                            if let Some(wid) = (load_fn)(path) {
+                                win.clear();
+                                win.begin();
+                                utils::transform(&wid);
+                                win.end();
+                                if let Some(mut frst) = win.child(0) {
+                                    frst.resize(0, 0, win.w(), win.h());
+                                    win.resizable(&frst);
+                                }
+                                app::redraw();
+                                flag.store(true, Ordering::Relaxed);
                             }
                         }
                     }
