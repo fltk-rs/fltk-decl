@@ -1,0 +1,20 @@
+{
+    "$schema": "https://raw.githubusercontent.com/MoAlyousef/fltk-decl/main/schemas/fltk-schema.json",
+    "widget": "Column",
+    "children": [
+        {
+            "widget": "Frame",
+            "fixed": 40,
+            "label": "Choose month"
+        },
+        {
+            "widget": "Choice",
+            "fixed": 30,
+            "id": "choice"
+        },
+        {
+            "widget": "Frame",
+            "id": "label"
+        }
+    ]
+}
