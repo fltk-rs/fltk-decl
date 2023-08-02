@@ -51,11 +51,12 @@ where
     }
     if w.left.is_some() || w.top.is_some() || w.right.is_some() || w.bottom.is_some() {
         if let Some(mut flex) = group::Flex::from_dyn_widget(widget) {
+            let old = flex.margins();
             flex.set_margins(
-                w.left.unwrap_or(0),
-                w.top.unwrap_or(0),
-                w.right.unwrap_or(0),
-                w.bottom.unwrap_or(0),
+                w.left.unwrap_or(old.0),
+                w.top.unwrap_or(old.1),
+                w.right.unwrap_or(old.2),
+                w.bottom.unwrap_or(old.3),
             );
         }
     }
