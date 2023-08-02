@@ -29,15 +29,34 @@ where
     if let Some(label) = &w.label {
         widget.set_label(label);
     }
-    if let Some(s) = &w.size {
-        let (x, y, w, h) = parse_size(s);
-        widget.resize(x, y, w, h);
+    if w.x.is_some() || w.y.is_some() || w.w.is_some() || w.h.is_some() {
+        widget.resize(
+            w.x.unwrap_or(widget.x()),
+            w.y.unwrap_or(widget.y()),
+            w.w.unwrap_or(widget.w()),
+            w.h.unwrap_or(widget.h()),
+        );
     }
     if let Some(fixed) = w.fixed {
         if let Some(parent) = widget.parent() {
             if let Some(mut flex) = group::Flex::from_dyn_widget(&parent) {
-                flex.set_size(widget, fixed);
+                flex.fixed(widget, fixed);
             }
+        }
+    }
+    if let Some(margin) = w.margin {
+        if let Some(mut flex) = group::Flex::from_dyn_widget(widget) {
+            flex.set_margin(margin);
+        }
+    }
+    if w.left.is_some() || w.top.is_some() || w.right.is_some() || w.bottom.is_some() {
+        if let Some(mut flex) = group::Flex::from_dyn_widget(widget) {
+            flex.set_margins(
+                w.left.unwrap_or(0),
+                w.top.unwrap_or(0),
+                w.right.unwrap_or(0),
+                w.bottom.unwrap_or(0),
+            );
         }
     }
     if let Some(col) = &w.color {
@@ -414,30 +433,4 @@ pub(crate) fn transform(w: &Widget) {
         }
         _ => (),
     };
-}
-
-fn parse_size(s: &str) -> (i32, i32, i32, i32) {
-    let s = if s.starts_with('(') && s.ends_with(')') {
-        &s[1..s.len() - 1]
-    } else {
-        s
-    };
-    let s: Vec<_> = s.split(',').map(|s| s.trim()).collect();
-    match s.len() {
-        4 => (
-            s[0].parse().unwrap_or(0),
-            s[1].parse().unwrap_or(0),
-            s[2].parse().unwrap_or(0),
-            s[3].parse().unwrap_or(0),
-        ),
-        3 => (
-            0,
-            s[0].parse().unwrap_or(0),
-            s[1].parse().unwrap_or(0),
-            s[2].parse().unwrap_or(0),
-        ),
-        2 => (0, 0, s[0].parse().unwrap_or(0), s[1].parse().unwrap_or(0)),
-        1 => (0, 0, 0, s[0].parse().unwrap_or(0)),
-        _ => (0, 0, 0, 0),
-    }
 }

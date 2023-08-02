@@ -18,13 +18,52 @@
                     "type": "string",
                     "description": "The widget's label."
                 },
-                "size": {
-                    "type": "string",
-                    "description": "The widget's size."
-                },
                 "fixed": {
                     "type": "integer",
                     "description": "Whether the widget is fixed within a flex",
+                    "minimum": 0
+                },
+                "x": {
+                    "type": "integer",
+                    "description": "The widget's x coordinate"
+                },
+                "y": {
+                    "type": "integer",
+                    "description": "The widget's y coordinate"
+                },
+                "w": {
+                    "type": "integer",
+                    "description": "The widget's width",
+                    "minimum": 0
+                },
+                "h": {
+                    "type": "integer",
+                    "description": "The widget's height",
+                    "minimum": 0
+                },
+                "margin": {
+                    "type": "integer",
+                    "description": "The flex's margin",
+                    "minimum": 0
+                },
+                "left": {
+                    "type": "integer",
+                    "description": "The flex's left margin",
+                    "minimum": 0
+                },
+                "top": {
+                    "type": "integer",
+                    "description": "The flex's top margin",
+                    "minimum": 0
+                },
+                "right": {
+                    "type": "integer",
+                    "description": "The flex's right margin",
+                    "minimum": 0
+                },
+                "bottom": {
+                    "type": "integer",
+                    "description": "The flex's bottom margin",
                     "minimum": 0
                 },
                 "id": {

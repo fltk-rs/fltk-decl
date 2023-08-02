@@ -5,7 +5,8 @@ const GUI: &str = r#"<?xml version="1.0" encoding="UTF-8"?>
     <widget>Group</widget>
     <children>
         <widget>Button</widget>
-        <size>0,0,80,30</size>
+        <w>80</w>
+        <h>30</h>
         <label>Click Me</label>
         <id>my_button</id>
         <labelcolor>#0000ff</labelcolor>

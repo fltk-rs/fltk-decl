@@ -6,8 +6,16 @@
       <xs:sequence>
         <xs:element name="widget" type="xs:string" />
         <xs:element name="label" type="xs:string" minOccurs="0" />
-        <xs:element name="size" type="xs:string" minOccurs="0" />
         <xs:element name="fixed" type="xs:integer" minOccurs="0" />
+        <xs:element name="x" type="xs:integer" minOccurs="0" />
+        <xs:element name="y" type="xs:integer" minOccurs="0" />
+        <xs:element name="w" type="xs:integer" minOccurs="0" />
+        <xs:element name="h" type="xs:integer" minOccurs="0" />
+        <xs:element name="margins" type="xs:integer" minOccurs="0" />
+        <xs:element name="left" type="xs:integer" minOccurs="0" />
+        <xs:element name="top" type="xs:integer" minOccurs="0" />
+        <xs:element name="right" type="xs:integer" minOccurs="0" />
+        <xs:element name="bottom" type="xs:integer" minOccurs="0" />
         <xs:element name="id" type="xs:string" minOccurs="0" />
         <xs:element name="labelcolor" type="xs:string" minOccurs="0" />
         <xs:element name="color" type="xs:string" minOccurs="0" />

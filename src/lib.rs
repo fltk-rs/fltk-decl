@@ -49,7 +49,15 @@ pub struct Widget {
     textfont: Option<i32>,
     textsize: Option<i32>,
     textcolor: Option<String>,
-    size: Option<String>,
+    x: Option<i32>,
+    y: Option<i32>,
+    w: Option<i32>,
+    h: Option<i32>,
+    margin: Option<i32>,
+    left: Option<i32>,
+    top: Option<i32>,
+    right: Option<i32>,
+    bottom: Option<i32>,
 }
 
 /// Entry point for your declarative app
