@@ -352,6 +352,15 @@ or s-expression format:
 - widget: (Required) The widget type (string)
 - label: The widget label (string)
 - fixed: Whether the widget is fixed inside a Flex (integer)
+- x: x coordinate
+- y: y coordinate
+- w: width
+- h: height
+- margin: A flex's margin
+- left: A flex's left margin
+- top: A flex's top margin
+- right: A flex's right margin
+- bottom: A flex's bottom margin
 - id: The widget's id (string)
 - labelcolor: The widget's label color (string, format #xxxxxx)
 - color: The widget's color (string, format #xxxxxx)
