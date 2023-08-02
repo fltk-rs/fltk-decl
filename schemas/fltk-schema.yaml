@@ -15,6 +15,9 @@ definitions:
       label:
         type: string
         description: The widget's label.
+      size:
+        type: string
+        description: The widget's size.
       fixed:
         type: integer
         description: Whether the widget is fixed within a flex

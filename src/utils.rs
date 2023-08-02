@@ -29,6 +29,10 @@ where
     if let Some(label) = &w.label {
         widget.set_label(label);
     }
+    if let Some(s) = &w.size {
+        let (x, y, w, h) = parse_size(s);
+        widget.resize(x, y, w, h);
+    }
     if let Some(fixed) = w.fixed {
         if let Some(parent) = widget.parent() {
             if let Some(mut flex) = group::Flex::from_dyn_widget(&parent) {
@@ -147,267 +151,293 @@ where
 pub(crate) fn transform(w: &Widget) {
     match w.widget.as_str() {
         "Column" => {
-            let mut c = group::Flex::default().column();
+            let mut c = group::Flex::default_fill().column();
             handle_w(w, &mut c);
         }
         "Row" => {
-            let mut c = group::Flex::default().row();
+            let mut c = group::Flex::default_fill().row();
             handle_w(w, &mut c);
         }
         "Button" => {
-            let mut b = button::Button::default();
+            let mut b = button::Button::default_fill();
             handle_w(w, &mut b);
         }
         "CheckButton" => {
-            let mut b = button::CheckButton::default();
+            let mut b = button::CheckButton::default_fill();
             handle_w(w, &mut b);
         }
         "RadioButton" => {
-            let mut b = button::RadioButton::default();
+            let mut b = button::RadioButton::default_fill();
             handle_w(w, &mut b);
         }
         "ToggleButton" => {
-            let mut b = button::ToggleButton::default();
+            let mut b = button::ToggleButton::default_fill();
             handle_w(w, &mut b);
         }
         "RadioRoundButton" => {
-            let mut b = button::RadioRoundButton::default();
+            let mut b = button::RadioRoundButton::default_fill();
             handle_w(w, &mut b);
         }
         "ReturnButton" => {
-            let mut b = button::ReturnButton::default();
+            let mut b = button::ReturnButton::default_fill();
             handle_w(w, &mut b);
         }
         "Frame" => {
-            let mut f = frame::Frame::default();
+            let mut f = frame::Frame::default_fill();
             handle_w(w, &mut f);
         }
         "Group" => {
-            let mut f = group::Group::default();
+            let mut f = group::Group::default_fill();
             handle_w(w, &mut f);
         }
         "Pack" => {
-            let mut f = group::Pack::default();
+            let mut f = group::Pack::default_fill();
             handle_w(w, &mut f);
         }
         "Tile" => {
-            let mut f = group::Tile::default();
+            let mut f = group::Tile::default_fill();
             handle_w(w, &mut f);
         }
         "Tabs" => {
-            let mut f = group::Tabs::default();
+            let mut f = group::Tabs::default_fill();
             handle_w(w, &mut f);
         }
         "Scroll" => {
-            let mut f = group::Scroll::default();
+            let mut f = group::Scroll::default_fill();
             handle_w(w, &mut f);
         }
         "ColorChooser" => {
-            let mut f = group::ColorChooser::default();
+            let mut f = group::ColorChooser::default_fill();
             handle_w(w, &mut f);
         }
         "TextDisplay" => {
-            let mut f = text::TextDisplay::default();
+            let mut f = text::TextDisplay::default_fill();
             handle_text!(w, f);
             let buf = text::TextBuffer::default();
             f.set_buffer(buf);
             handle_w(w, &mut f);
         }
         "TextEditor" => {
-            let mut f = text::TextEditor::default();
+            let mut f = text::TextEditor::default_fill();
             handle_text!(w, f);
             let buf = text::TextBuffer::default();
             f.set_buffer(buf);
             handle_w(w, &mut f);
         }
         "Input" => {
-            let mut f = input::Input::default();
+            let mut f = input::Input::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "IntInput" => {
-            let mut f = input::IntInput::default();
+            let mut f = input::IntInput::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "FloatInput" => {
-            let mut f = input::FloatInput::default();
+            let mut f = input::FloatInput::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "SecretInput" => {
-            let mut f = input::SecretInput::default();
+            let mut f = input::SecretInput::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "FileInput" => {
-            let mut f = input::FileInput::default();
+            let mut f = input::FileInput::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "MultilineInput" => {
-            let mut f = input::MultilineInput::default();
+            let mut f = input::MultilineInput::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "Output" => {
-            let mut f = output::Output::default();
+            let mut f = output::Output::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "MultilineOutput" => {
-            let mut f = output::Output::default();
+            let mut f = output::Output::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "MenuBar" => {
-            let mut f = menu::MenuBar::default();
+            let mut f = menu::MenuBar::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "SysMenuBar" => {
-            let mut f = menu::SysMenuBar::default();
+            let mut f = menu::SysMenuBar::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "Choice" => {
-            let mut f = menu::Choice::default();
+            let mut f = menu::Choice::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "Slider" => {
-            let mut f = valuator::Slider::default();
+            let mut f = valuator::Slider::default_fill();
             handle_w(w, &mut f);
         }
         "NiceSlider" => {
-            let mut f = valuator::NiceSlider::default();
+            let mut f = valuator::NiceSlider::default_fill();
             handle_w(w, &mut f);
         }
         "FillSlider" => {
-            let mut f = valuator::FillSlider::default();
+            let mut f = valuator::FillSlider::default_fill();
             handle_w(w, &mut f);
         }
         "ValueSlider" => {
-            let mut f = valuator::ValueSlider::default();
+            let mut f = valuator::ValueSlider::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "Dial" => {
-            let mut f = valuator::Dial::default();
+            let mut f = valuator::Dial::default_fill();
             handle_w(w, &mut f);
         }
         "LineDial" => {
-            let mut f = valuator::LineDial::default();
+            let mut f = valuator::LineDial::default_fill();
             handle_w(w, &mut f);
         }
         "FillDial" => {
-            let mut f = valuator::FillDial::default();
+            let mut f = valuator::FillDial::default_fill();
             handle_w(w, &mut f);
         }
         "Counter" => {
-            let mut f = valuator::Counter::default();
+            let mut f = valuator::Counter::default_fill();
             handle_w(w, &mut f);
         }
         "Scrollbar" => {
-            let mut f = valuator::Scrollbar::default();
+            let mut f = valuator::Scrollbar::default_fill();
             handle_w(w, &mut f);
         }
         "Roller" => {
-            let mut f = valuator::Roller::default();
+            let mut f = valuator::Roller::default_fill();
             handle_w(w, &mut f);
         }
         "Adjuster" => {
-            let mut f = valuator::Adjuster::default();
+            let mut f = valuator::Adjuster::default_fill();
             handle_w(w, &mut f);
         }
         "ValueInput" => {
-            let mut f = valuator::ValueInput::default();
+            let mut f = valuator::ValueInput::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "ValueOutput" => {
-            let mut f = valuator::ValueOutput::default();
+            let mut f = valuator::ValueOutput::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "HorSlider" => {
-            let mut f = valuator::HorSlider::default();
+            let mut f = valuator::HorSlider::default_fill();
             handle_w(w, &mut f);
         }
         "HorNiceSlider" => {
-            let mut f = valuator::HorNiceSlider::default();
+            let mut f = valuator::HorNiceSlider::default_fill();
             handle_w(w, &mut f);
         }
         "HorFillSlider" => {
-            let mut f = valuator::HorFillSlider::default();
+            let mut f = valuator::HorFillSlider::default_fill();
             handle_w(w, &mut f);
         }
         "HorValueSlider" => {
-            let mut f = valuator::HorValueSlider::default();
+            let mut f = valuator::HorValueSlider::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "Browser" => {
-            let mut f = browser::Browser::default();
+            let mut f = browser::Browser::default_fill();
             handle_w(w, &mut f);
         }
         "SelectBrowser" => {
-            let mut f = browser::SelectBrowser::default();
+            let mut f = browser::SelectBrowser::default_fill();
             handle_w(w, &mut f);
         }
         "HoldBrowser" => {
-            let mut f = browser::HoldBrowser::default();
+            let mut f = browser::HoldBrowser::default_fill();
             handle_w(w, &mut f);
         }
         "FileBrowser" => {
-            let mut f = browser::FileBrowser::default();
+            let mut f = browser::FileBrowser::default_fill();
             handle_w(w, &mut f);
         }
         "CheckBrowser" => {
-            let mut f = browser::CheckBrowser::default();
+            let mut f = browser::CheckBrowser::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "MultiBrowser" => {
-            let mut f = browser::MultiBrowser::default();
+            let mut f = browser::MultiBrowser::default_fill();
             handle_w(w, &mut f);
         }
         "Table" => {
-            let mut f = table::Table::default();
+            let mut f = table::Table::default_fill();
             handle_w(w, &mut f);
         }
         "TableRow" => {
-            let mut f = table::TableRow::default();
+            let mut f = table::TableRow::default_fill();
             handle_w(w, &mut f);
         }
         "Tree" => {
-            let mut f = tree::Tree::default();
+            let mut f = tree::Tree::default_fill();
             handle_w(w, &mut f);
         }
         "Spinner" => {
-            let mut f = misc::Spinner::default();
+            let mut f = misc::Spinner::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "Chart" => {
-            let mut f = misc::Chart::default();
+            let mut f = misc::Chart::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "Progress" => {
-            let mut f = misc::Progress::default();
+            let mut f = misc::Progress::default_fill();
             handle_w(w, &mut f);
         }
         "InputChoice" => {
-            let mut f = misc::InputChoice::default();
+            let mut f = misc::InputChoice::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         "HelpView" => {
-            let mut f = misc::HelpView::default();
+            let mut f = misc::HelpView::default_fill();
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
         _ => (),
     };
+}
+
+fn parse_size(s: &str) -> (i32, i32, i32, i32) {
+    let s = if s.starts_with('(') && s.ends_with(')') {
+        &s[1..s.len() - 1]
+    } else {
+        s
+    };
+    let s: Vec<_> = s.split(',').map(|s| s.trim()).collect();
+    match s.len() {
+        4 => (
+            s[0].parse().unwrap_or(0),
+            s[1].parse().unwrap_or(0),
+            s[2].parse().unwrap_or(0),
+            s[3].parse().unwrap_or(0),
+        ),
+        3 => (
+            0,
+            s[0].parse().unwrap_or(0),
+            s[1].parse().unwrap_or(0),
+            s[2].parse().unwrap_or(0),
+        ),
+        2 => (0, 0, s[0].parse().unwrap_or(0), s[1].parse().unwrap_or(0)),
+        1 => (0, 0, 0, s[0].parse().unwrap_or(0)),
+        _ => (0, 0, 0, 0),
+    }
 }

@@ -2,9 +2,10 @@ use fltk_decl::DeclarativeApp;
 
 const GUI: &str = r#"<?xml version="1.0" encoding="UTF-8"?>
 <root>
-    <widget>Column</widget>
+    <widget>Group</widget>
     <children>
         <widget>Button</widget>
+        <size>0,0,80,30</size>
         <label>Click Me</label>
         <id>my_button</id>
         <labelcolor>#0000ff</labelcolor>
