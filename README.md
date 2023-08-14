@@ -449,3 +449,6 @@ or s-expression format:
 - Progress 
 - InputChoice 
 - HelpView 
+- Window
+- MenuWindow
+- GlutWindow (requires the enable-glwindow feature)

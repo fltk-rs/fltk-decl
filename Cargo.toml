@@ -1,6 +1,6 @@
 [package]
 name = "fltk-decl"
-version = "0.2.5"
+version = "0.2.6"
 authors = ["MoAlyousef <mohammed.alyousef@neurosrg.com>"]
 edition = "2021"
 description = "Describe your fltk-rs app declaratively, supports hot-reloading!"
@@ -27,6 +27,7 @@ json = ["dep:serde_json"]
 json5 = ["dep:serde_json5"]
 yaml = ["dep:serde_yaml"]
 xml = ["dep:serde-xml-rs"]
+enable-glwindow = ["fltk/enable-glwindow"]
 
 [dev-dependencies]
 serde_json5 = "0.1"

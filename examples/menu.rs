@@ -4,6 +4,7 @@ use fltk::{prelude::*, *};
 use fltk_decl::DeclarativeApp;
 
 fn main() {
+    #[cfg(feature = "json5")]
     DeclarativeApp::new_json5(200, 300, "MyApp", "examples/menu.json")
         .run(|_win| {
             if let Some(mut choice) = app::widget_from_id::<menu::Choice>("choice") {
