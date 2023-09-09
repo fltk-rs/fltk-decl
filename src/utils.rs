@@ -432,6 +432,21 @@ pub(crate) fn transform(w: &Widget) {
             handle_text!(w, f);
             handle_w(w, &mut f);
         }
+        "Window" => {
+            let mut f = window::Window::default_fill();
+            handle_w(w, &mut f);
+        }
+        "MenuWindow" => {
+            let mut f = window::MenuWindow::default_fill();
+            handle_w(w, &mut f);
+        }
+        "GlutWindow" => {
+            #[cfg(feature = "enable-glwindow")]
+            let mut f = window::GlutWindow::default_fill();
+            #[cfg(not(feature = "enable-glwindow"))]
+            let mut f = window::Window::default_fill();
+            handle_w(w, &mut f);
+        }
         _ => (),
     };
 }
