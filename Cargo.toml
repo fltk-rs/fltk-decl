@@ -1,6 +1,6 @@
 [package]
 name = "fltk-decl"
-version = "0.2.5"
+version = "0.2.6"
 authors = ["MoAlyousef <mohammed.alyousef@neurosrg.com>"]
 edition = "2021"
 description = "Describe your fltk-rs app declaratively, supports hot-reloading!"
@@ -12,7 +12,7 @@ readme = "README.md"
 license = "MIT"
 
 [dependencies]
-fltk = "1.4.7"
+fltk = "1.4.12"
 serde = "1"
 serde_derive = "1"
 notify = "5.1"
